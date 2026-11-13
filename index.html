@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXTBOT CHASE // 5:00 SURVIVAL</title>
+    <title>NEXTBOT CHASE // B-HOP SURVIVAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -35,7 +35,6 @@
             left: 0;
             z-index: 1;
         }
-        /* CRT & Danger Vignette Overlay */
         #dangerVignette {
             position: fixed;
             inset: 0;
@@ -56,30 +55,6 @@
             background-size: 100% 4px;
             opacity: 0.45;
         }
-        /* Glitch animation for danger/jumpscare */
-        @keyframes glitchShake {
-            0% { transform: translate(0, 0) skew(0deg); }
-            20% { transform: translate(-8px, 6px) skew(-4deg); }
-            40% { transform: translate(8px, -6px) skew(4deg); }
-            60% { transform: translate(-6px, -4px) skew(-2deg); }
-            80% { transform: translate(6px, 4px) skew(3deg); }
-            100% { transform: translate(0, 0) skew(0deg); }
-        }
-        .shake-active {
-            animation: glitchShake 0.12s infinite;
-        }
-        /* Custom Scrollbar for menus */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.6);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.5);
-            border-radius: 3px;
-        }
-        /* GMod Source Engine style panel */
         .gmod-panel {
             background: rgba(17, 20, 26, 0.85);
             backdrop-filter: blur(12px);
@@ -87,14 +62,14 @@
             border: 1px solid rgba(255, 255, 255, 0.12);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
         }
-        .map-card {
+        .map-card, .time-btn {
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .map-card:hover {
+        .map-card:hover, .time-btn:hover {
             transform: translateY(-2px);
             border-color: rgba(56, 189, 248, 0.6);
         }
-        .map-card.selected {
+        .map-card.selected, .time-btn.selected {
             border-color: #38bdf8;
             background: rgba(14, 165, 233, 0.16);
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
@@ -110,7 +85,6 @@
             border-color: #f87171;
             box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
         }
-        /* Handheld Scanner Overlay */
         #handheldScanner {
             transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
         }
@@ -126,23 +100,14 @@
     </style>
 </head>
 <body>
-    <!-- 3D WebGL Canvas -->
     <canvas id="gameCanvas"></canvas>
-
-    <!-- Visual Overlays -->
     <div id="dangerVignette"></div>
     <div id="scanlines"></div>
 
-    <!-- Static Jumpscare Canvas Overlay -->
-    <canvas id="jumpscareCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-40 hidden"></canvas>
-
     <!-- IN-GAME HUD -->
     <div id="hudContainer" class="fixed inset-0 pointer-events-none z-20 hidden flex flex-col justify-between p-4 sm:p-6">
-        
-        <!-- Top Row: Radar (Left) | 5:00 Timer (Center) | Killfeed & Controls (Right) -->
         <div class="flex items-start justify-between w-full gap-2">
-            
-            <!-- Circular Motion Tracker / Radar -->
+            <!-- Circular Radar -->
             <div class="flex flex-col items-center">
                 <div class="relative rounded-full p-1.5 bg-slate-950/85 border-2 border-emerald-500/50 shadow-[0_0_25px_rgba(16,185,129,0.25)]">
                     <canvas id="radarCanvas" width="156" height="156" class="rounded-full block w-[124px] h-[124px] sm:w-[156px] sm:h-[156px]"></canvas>
@@ -156,15 +121,11 @@
                 </div>
             </div>
 
-            <!-- 5:00 Survival Countdown Timer -->
+            <!-- Timer -->
             <div class="flex flex-col items-center">
                 <div class="gmod-panel px-5 py-2.5 sm:px-7 sm:py-3 rounded-xl border-t-2 border-t-sky-400 flex flex-col items-center">
-                    <div class="text-[10px] sm:text-xs font-mono-tech uppercase tracking-[0.2em] text-sky-400 font-bold">
-                        SURVIVE THE CHASE
-                    </div>
-                    <div id="timerDisplay" class="font-mono-tech text-3xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.3)]">
-                        05:00.00
-                    </div>
+                    <div class="text-[10px] sm:text-xs font-mono-tech uppercase tracking-[0.2em] text-sky-400 font-bold">SURVIVAL CHASE</div>
+                    <div id="timerDisplay" class="font-mono-tech text-3xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.3)]">05:00.00</div>
                     <div class="flex items-center gap-3 mt-1 text-[11px] font-mono-tech text-slate-400">
                         <span id="hudMapLabel" class="uppercase text-slate-200 font-semibold">BACKROOMS</span>
                         <span>•</span>
@@ -173,7 +134,7 @@
                 </div>
             </div>
 
-            <!-- Right Side: Killfeed Alerts & Quick Audio/Pause Status -->
+            <!-- Right Controls -->
             <div class="flex flex-col items-end gap-2 max-w-[240px] sm:max-w-[290px]">
                 <div class="flex items-center gap-2 pointer-events-auto">
                     <button id="hudMusicBtn" class="bg-slate-900/85 hover:bg-slate-800 border border-white/15 px-3 py-1.5 rounded-lg text-xs font-mono-tech text-slate-200 flex items-center gap-1.5 transition">
@@ -185,24 +146,20 @@
                         <span>[F]</span>
                     </button>
                 </div>
-                <!-- GMod style alert feed -->
-                <div id="alertFeed" class="flex flex-col items-end gap-1.5 w-full mt-1"></div>
             </div>
         </div>
 
-        <!-- Center Crosshair & Pointer Lock Prompt -->
+        <!-- Crosshair & Pointer Lock Prompt -->
         <div class="flex flex-col items-center justify-center my-auto">
             <div id="crosshair" class="w-1.5 h-1.5 rounded-full bg-white/80 shadow-[0_0_6px_rgba(0,0,0,0.9)]"></div>
             <div id="pointerLockPrompt" class="hidden pointer-events-auto mt-4 bg-black/85 border border-sky-400/50 px-5 py-3 rounded-xl text-center shadow-2xl cursor-pointer hover:bg-slate-900 transition">
                 <div class="text-sm font-bold text-white tracking-wide">CLICK TO LOCK MOUSE & RESUME</div>
-                <div class="text-xs text-slate-400 font-mono-tech mt-0.5">WASD Move • SHIFT Sprint • SPACE Jump • F Flashlight • TAB Radar</div>
+                <div class="text-xs text-slate-400 font-mono-tech mt-0.5">WASD Move • SPACE B-Hop • SHIFT Sprint • F Flashlight • TAB Radar</div>
             </div>
         </div>
 
-        <!-- Bottom Row: GMod Health/Stamina HUD + Handheld Tablet Radar -->
+        <!-- Bottom HUD -->
         <div class="flex items-end justify-between w-full relative">
-            
-            <!-- Classic GMod-inspired Stamina & Status Box -->
             <div class="gmod-panel rounded-xl p-3.5 sm:p-4 min-w-[220px] sm:min-w-[270px] border-l-4 border-l-amber-400">
                 <div class="flex justify-between items-baseline mb-1.5">
                     <span class="text-xs font-mono-tech font-bold tracking-wider text-amber-400 uppercase">STAMINA / SPRINT</span>
@@ -212,13 +169,13 @@
                     <div id="staminaBar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-300 rounded-sm transition-all duration-75" style="width: 100%;"></div>
                 </div>
                 <div class="mt-2.5 flex items-center justify-between text-[11px] font-mono-tech text-slate-400">
+                    <span>[SPACE] B-HOP</span>
                     <span>[SHIFT] RUN</span>
-                    <span>[SPACE] JUMP</span>
                     <span id="flashlightStatusText" class="text-amber-300">LIGHT: ON</span>
                 </div>
             </div>
 
-            <!-- Handheld Tactical Scanner (Toggled with TAB or R) -->
+            <!-- Handheld Scanner -->
             <div id="handheldScanner" class="scanner-hidden fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 gmod-panel rounded-2xl p-3.5 border-2 border-emerald-500/60 shadow-[0_0_40px_rgba(16,185,129,0.3)] w-[250px] sm:w-[300px]">
                 <div class="flex items-center justify-between border-b border-emerald-500/30 pb-2 mb-2">
                     <div class="flex items-center gap-2">
@@ -228,153 +185,131 @@
                     <span class="font-mono-tech text-[10px] text-slate-400">[TAB]</span>
                 </div>
                 <canvas id="bigScannerCanvas" width="268" height="220" class="w-full h-[180px] sm:h-[210px] rounded-lg bg-slate-950 border border-emerald-500/30 block"></canvas>
-                <div id="scannerBotList" class="mt-2 space-y-1 max-h-[84px] overflow-y-auto font-mono-tech text-[11px]"></div>
-            </div>
-
-            <!-- Mobile Touch Controls (Shown automatically on touch devices) -->
-            <div id="mobileControls" class="hidden pointer-events-auto flex items-center gap-3">
-                <button id="btnMobileJump" class="w-14 h-14 rounded-full bg-slate-900/85 border border-white/20 active:bg-sky-600 font-mono-tech text-xs font-bold">JUMP</button>
-                <button id="btnMobileSprint" class="w-14 h-14 rounded-full bg-amber-600/80 border border-amber-300/40 active:bg-amber-500 font-mono-tech text-xs font-bold">RUN</button>
-                <button id="btnMobileRadar" class="w-14 h-14 rounded-full bg-emerald-700/80 border border-emerald-300/40 active:bg-emerald-500 font-mono-tech text-xs font-bold">RADAR</button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN MENU OVERLAY -->
+    <!-- MAIN MENU -->
     <div id="mainMenu" class="fixed inset-0 z-30 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm overflow-y-auto">
         <div class="gmod-panel rounded-2xl max-w-4xl w-full p-5 sm:p-8 border border-white/15 my-auto">
-            
-            <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
                 <div>
                     <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-sky-500/15 border border-sky-400/30 text-sky-300 font-mono-tech text-xs font-bold mb-2">
-                        <span>SOURCE-STYLE SANDBOX HORROR</span>
-                        <span>•</span>
-                        <span>5:00 SURVIVAL</span>
+                        <span>B-HOPPING & CITIZEN MODEL ACTIVE</span>
                     </div>
                     <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white">
                         NEXTBOT <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">CHASE 3D</span>
                     </h1>
-                    <p class="text-slate-400 text-sm mt-1">
-                        Outrun relentless PNG anomalies for 5 full minutes. Use your motion radar and listen for proximity audio.
-                    </p>
+                    <p class="text-slate-400 text-sm mt-1">Master source engine bunny hopping to outrun Obunga & Sanic.</p>
                 </div>
                 <div class="flex items-center gap-2 self-start sm:self-center">
                     <button id="menuMusicToggle" class="px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-white/10 text-xs font-mono-tech font-bold text-slate-200 flex items-center gap-2 transition">
                         <span id="menuMusicIcon">🔊</span>
-                        <span>SYNTH AUDIO: ON</span>
+                        <span>MENU MUSIC: ON</span>
                     </button>
                 </div>
             </div>
 
             <!-- Step 1: Select Map -->
-            <div class="mt-6">
-                <div class="flex items-center justify-between mb-3">
+            <div class="mt-5">
+                <div class="flex items-center justify-between mb-2">
                     <h2 class="text-xs font-mono-tech uppercase tracking-widest text-slate-300 font-bold">1. SELECT ARENA MAP</h2>
                     <span id="selectedMapBadge" class="text-xs font-mono-tech text-sky-400 font-bold">SELECTED: THE BACKROOMS</span>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="mapGrid">
-                    <!-- Map 1: Backrooms -->
-                    <div class="map-card selected cursor-pointer rounded-xl p-3.5 bg-slate-900/80 border border-white/10 flex flex-col justify-between" data-map="backrooms">
+                    <div class="map-card selected cursor-pointer rounded-xl p-3 bg-slate-900/80 border border-white/10 flex flex-col justify-between" data-map="backrooms">
                         <div>
-                            <div class="h-20 rounded-lg mb-2.5 flex items-center justify-center relative overflow-hidden border border-yellow-500/30" style="background: repeating-linear-gradient(90deg, #b59e38 0px, #b59e38 14px, #9c8628 14px, #9c8628 28px);">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
-                                <span class="relative z-10 font-mono-tech text-[11px] font-bold px-2 py-0.5 rounded bg-black/75 text-yellow-300 border border-yellow-400/30">LEVEL 0</span>
+                            <div class="h-16 rounded-lg mb-2 flex items-center justify-center relative overflow-hidden border border-yellow-500/30" style="background: repeating-linear-gradient(90deg, #b59e38 0px, #b59e38 14px, #9c8628 14px, #9c8628 28px);">
+                                <span class="relative z-10 font-mono-tech text-[10px] font-bold px-2 py-0.5 rounded bg-black/75 text-yellow-300 border border-yellow-400/30">LEVEL 0</span>
                             </div>
                             <h3 class="font-bold text-white text-sm">The Backrooms</h3>
-                            <p class="text-xs text-slate-400 mt-1 leading-relaxed">Damp yellow wallpaper labyrinth, buzzing fluorescent lights, tight blind corners.</p>
-                        </div>
-                        <div class="mt-3 pt-2 border-t border-white/5 flex justify-between text-[10px] font-mono-tech text-yellow-400">
-                            <span>VISIBILITY: MED</span>
-                            <span>MAZE</span>
                         </div>
                     </div>
-
-                    <!-- Map 2: Forest -->
-                    <div class="map-card cursor-pointer rounded-xl p-3.5 bg-slate-900/80 border border-white/10 flex flex-col justify-between" data-map="forest">
+                    <div class="map-card cursor-pointer rounded-xl p-3 bg-slate-900/80 border border-white/10 flex flex-col justify-between" data-map="forest">
                         <div>
-                            <div class="h-20 rounded-lg mb-2.5 flex items-center justify-center relative overflow-hidden border border-emerald-500/30" style="background: radial-gradient(circle at 50% 25%, #1e3a2f, #07110d);">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent"></div>
-                                <span class="relative z-10 font-mono-tech text-[11px] font-bold px-2 py-0.5 rounded bg-black/75 text-emerald-300 border border-emerald-400/30">MIDNIGHT WOODS</span>
+                            <div class="h-16 rounded-lg mb-2 flex items-center justify-center relative overflow-hidden border border-emerald-500/30" style="background: radial-gradient(circle at 50% 25%, #1e3a2f, #07110d);">
+                                <span class="relative z-10 font-mono-tech text-[10px] font-bold px-2 py-0.5 rounded bg-black/75 text-emerald-300 border border-emerald-400/30">WOODS</span>
                             </div>
                             <h3 class="font-bold text-white text-sm">Dark Forest</h3>
-                            <p class="text-xs text-slate-400 mt-1 leading-relaxed">Dense foggy pine woods, wooden cabin ruins, moonlight shafts & ambush trees.</p>
-                        </div>
-                        <div class="mt-3 pt-2 border-t border-white/5 flex justify-between text-[10px] font-mono-tech text-emerald-400">
-                            <span>VISIBILITY: LOW</span>
-                            <span>OPEN FOG</span>
                         </div>
                     </div>
-
-                    <!-- Map 3: Crossroads -->
-                    <div class="map-card cursor-pointer rounded-xl p-3.5 bg-slate-900/80 border border-white/10 flex flex-col justify-between" data-map="crossroads">
+                    <div class="map-card cursor-pointer rounded-xl p-3 bg-slate-900/80 border border-white/10 flex flex-col justify-between" data-map="crossroads">
                         <div>
-                            <div class="h-20 rounded-lg mb-2.5 flex items-center justify-center relative overflow-hidden border border-red-500/30" style="background: linear-gradient(135deg, #2563eb 0%, #16a34a 50%, #dc2626 100%);">
-                                <div class="absolute inset-0 bg-black/35"></div>
-                                <span class="relative z-10 font-mono-tech text-[11px] font-bold px-2 py-0.5 rounded bg-black/75 text-rose-200 border border-rose-400/30">BRICK ARENA</span>
+                            <div class="h-16 rounded-lg mb-2 flex items-center justify-center relative overflow-hidden border border-red-500/30" style="background: linear-gradient(135deg, #2563eb 0%, #16a34a 50%, #dc2626 100%);">
+                                <span class="relative z-10 font-mono-tech text-[10px] font-bold px-2 py-0.5 rounded bg-black/75 text-rose-200 border border-rose-400/30">ARENA</span>
                             </div>
                             <h3 class="font-bold text-white text-sm">Crossroads</h3>
-                            <p class="text-xs text-slate-400 mt-1 leading-relaxed">Classic studded brick-battle arena with colored towers, ramps & jump pads.</p>
-                        </div>
-                        <div class="mt-3 pt-2 border-t border-white/5 flex justify-between text-[10px] font-mono-tech text-rose-400">
-                            <span>VISIBILITY: HIGH</span>
-                            <span>VERTICAL</span>
                         </div>
                     </div>
-
-                    <!-- Map 4: gm_construct -->
-                    <div class="map-card cursor-pointer rounded-xl p-3.5 bg-slate-900/80 border border-white/10 flex flex-col justify-between" data-map="construct">
+                    <div class="map-card cursor-pointer rounded-xl p-3 bg-slate-900/80 border border-white/10 flex flex-col justify-between" data-map="construct">
                         <div>
-                            <div class="h-20 rounded-lg mb-2.5 flex items-center justify-center relative overflow-hidden border border-sky-500/30" style="background: linear-gradient(180deg, #38bdf8 0%, #94a3b8 55%, #4d7c0f 55%, #3f6212 100%);">
-                                <div class="absolute inset-0 bg-black/25"></div>
-                                <span class="relative z-10 font-mono-tech text-[11px] font-bold px-2 py-0.5 rounded bg-black/75 text-sky-300 border border-sky-400/30">SANDBOX</span>
+                            <div class="h-16 rounded-lg mb-2 flex items-center justify-center relative overflow-hidden border border-sky-500/30" style="background: linear-gradient(180deg, #38bdf8 0%, #94a3b8 55%, #4d7c0f 55%, #3f6212 100%);">
+                                <span class="relative z-10 font-mono-tech text-[10px] font-bold px-2 py-0.5 rounded bg-black/75 text-sky-300 border border-sky-400/30">SANDBOX</span>
                             </div>
                             <h3 class="font-bold text-white text-sm">gm_construct</h3>
-                            <p class="text-xs text-slate-400 mt-1 leading-relaxed">Iconic GMod grassy courtyard, brutalist concrete towers, water pool & dark room.</p>
-                        </div>
-                        <div class="mt-3 pt-2 border-t border-white/5 flex justify-between text-[10px] font-mono-tech text-sky-400">
-                            <span>VISIBILITY: HIGH</span>
-                            <span>CLASSIC</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Step 2: Select Difficulty -->
-            <div class="mt-6">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-xs font-mono-tech uppercase tracking-widest text-slate-300 font-bold">2. SELECT THREAT DIFFICULTY</h2>
-                    <span id="diffDescText" class="text-xs text-slate-400 font-mono-tech">3 Nextbots • Balanced Speed • Standard Radar</span>
+            <!-- Step 2: Select Survival Time (2, 3, 4, 5 mins) -->
+            <div class="mt-5">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-xs font-mono-tech uppercase tracking-widest text-slate-300 font-bold">2. SELECT SURVIVAL DURATION</h2>
+                    <span id="selectedTimeBadge" class="text-xs font-mono-tech text-sky-400 font-bold">SELECTED: 5 MINUTES</span>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="diffGrid">
-                    <button class="diff-btn py-2.5 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition" data-diff="easy">
-                        <div class="font-bold text-sm text-emerald-400">EASY</div>
-                        <div class="text-[11px] text-slate-400 font-mono-tech">2 Bots • Chill Pace</div>
+                <div class="grid grid-cols-4 gap-2.5" id="timeGrid">
+                    <button class="time-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-center transition cursor-pointer" data-time="120">
+                        <div class="font-bold text-sm text-white">2 MINS</div>
+                        <div class="text-[10px] text-slate-400 font-mono-tech">Quick Sprint</div>
                     </button>
-                    <button class="diff-btn selected py-2.5 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition" data-diff="normal">
-                        <div class="font-bold text-sm text-sky-300">NORMAL</div>
-                        <div class="text-[11px] text-slate-300 font-mono-tech">3 Bots • Standard</div>
+                    <button class="time-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-center transition cursor-pointer" data-time="180">
+                        <div class="font-bold text-sm text-white">3 MINS</div>
+                        <div class="text-[10px] text-slate-400 font-mono-tech">Standard</div>
                     </button>
-                    <button class="diff-btn py-2.5 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition" data-diff="hard">
-                        <div class="font-bold text-sm text-amber-400">HARD</div>
-                        <div class="text-[11px] text-slate-400 font-mono-tech">4 Bots • Fast & Smart</div>
+                    <button class="time-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-center transition cursor-pointer" data-time="240">
+                        <div class="font-bold text-sm text-white">4 MINS</div>
+                        <div class="text-[10px] text-slate-400 font-mono-tech">Intense</div>
                     </button>
-                    <button class="diff-btn py-2.5 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition" data-diff="nightmare">
-                        <div class="font-bold text-sm text-rose-400">NIGHTMARE</div>
-                        <div class="text-[11px] text-slate-400 font-mono-tech">6 Bots • Pitch Dark</div>
+                    <button class="time-btn selected py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-center transition cursor-pointer" data-time="300">
+                        <div class="font-bold text-sm text-sky-300">5 MINS</div>
+                        <div class="text-[10px] text-slate-400 font-mono-tech">Hardcore</div>
                     </button>
                 </div>
             </div>
 
-            <!-- Controls Summary & Play Button -->
-            <div class="mt-7 pt-5 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <!-- Step 3: Select Difficulty -->
+            <div class="mt-5">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-xs font-mono-tech uppercase tracking-widest text-slate-300 font-bold">3. SELECT THREAT DIFFICULTY</h2>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="diffGrid">
+                    <button class="diff-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition cursor-pointer" data-diff="easy">
+                        <div class="font-bold text-xs text-emerald-400">EASY</div>
+                        <div class="text-[10px] text-slate-400 font-mono-tech">Chill Pace</div>
+                    </button>
+                    <button class="diff-btn selected py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition cursor-pointer" data-diff="normal">
+                        <div class="font-bold text-xs text-sky-300">NORMAL</div>
+                        <div class="text-[10px] text-slate-300 font-mono-tech">Standard Speed</div>
+                    </button>
+                    <button class="diff-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition cursor-pointer" data-diff="hard">
+                        <div class="font-bold text-xs text-amber-400">HARD</div>
+                        <div class="text-[10px] text-slate-400 font-mono-tech">Aggressive</div>
+                    </button>
+                    <button class="diff-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition cursor-pointer" data-diff="nightmare">
+                        <div class="font-bold text-xs text-rose-400">NIGHTMARE</div>
+                        <div class="text-[10px] text-slate-400 font-mono-tech">Pitch Dark</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Play Button -->
+            <div class="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="flex flex-wrap items-center gap-2 text-[11px] font-mono-tech text-slate-300">
                     <span class="px-2 py-1 rounded bg-white/5 border border-white/10">WASD Move</span>
-                    <span class="px-2 py-1 rounded bg-white/5 border border-white/10">MOUSE Look</span>
-                    <span class="px-2 py-1 rounded bg-white/5 border border-white/10">SHIFT Sprint</span>
-                    <span class="px-2 py-1 rounded bg-white/5 border border-white/10">SPACE Jump</span>
+                    <span class="px-2 py-1 rounded bg-white/5 border border-white/10">SPACE B-Hop</span>
                     <span class="px-2 py-1 rounded bg-white/5 border border-white/10">F Flashlight</span>
-                    <span class="px-2 py-1 rounded bg-white/5 border border-white/10">TAB Big Radar</span>
+                    <span class="px-2 py-1 rounded bg-white/5 border border-white/10">TAB Radar</span>
                 </div>
                 <button id="startGameBtn" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-black tracking-wider text-base shadow-[0_0_30px_rgba(14,165,233,0.45)] transition transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
                     DEPLOY INTO MAP ▶
@@ -386,17 +321,10 @@
     <!-- GAME OVER / VICTORY MODAL -->
     <div id="endScreen" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
         <div class="gmod-panel rounded-2xl max-w-lg w-full p-6 sm:p-8 border border-white/15 text-center">
-            <div id="endBadge" class="inline-block px-3 py-1 rounded-full text-xs font-mono-tech font-bold mb-3 bg-rose-500/20 text-rose-400 border border-rose-500/40">
-                TERMINATED BY ANOMALY
-            </div>
-            <h2 id="endTitle" class="text-3xl sm:text-4xl font-black text-white tracking-tight">
-                YOU WERE CAUGHT
-            </h2>
-            <p id="endSubtitle" class="text-slate-400 text-sm mt-2">
-                Obunga caught up to you in The Backrooms.
-            </p>
+            <div id="endBadge" class="inline-block px-3 py-1 rounded-full text-xs font-mono-tech font-bold mb-3 bg-rose-500/20 text-rose-400 border border-rose-500/40">TERMINATED BY ANOMALY</div>
+            <h2 id="endTitle" class="text-3xl sm:text-4xl font-black text-white tracking-tight">YOU WERE CAUGHT</h2>
+            <p id="endSubtitle" class="text-slate-400 text-sm mt-2">Obunga caught up to you.</p>
 
-            <!-- Run Stats -->
             <div class="grid grid-cols-2 gap-3 my-6 text-left">
                 <div class="bg-slate-950/80 border border-white/10 rounded-xl p-3">
                     <div class="text-[10px] font-mono-tech text-slate-400 uppercase">TIME SURVIVED</div>
@@ -408,21 +336,17 @@
                 </div>
                 <div class="bg-slate-950/80 border border-white/10 rounded-xl p-3">
                     <div class="text-[10px] font-mono-tech text-slate-400 uppercase">CLOSEST CALL</div>
-                    <div id="statClosestCall" class="font-mono-tech text-xl font-bold text-amber-400 mt-0.5">1.4 m</div>
+                    <div id="statClosestCall" class="font-mono-tech text-xl font-bold text-amber-400 mt-1 uppercase">1.4 m</div>
                 </div>
                 <div class="bg-slate-950/80 border border-white/10 rounded-xl p-3">
-                    <div class="text-[10px] font-mono-tech text-slate-400 uppercase">ARENA / THREAT</div>
+                    <div class="text-[10px] font-mono-tech text-slate-400 uppercase">ARENA / DIFF</div>
                     <div id="statMapDiff" class="font-mono-tech text-sm font-bold text-emerald-400 mt-1 uppercase">BACKROOMS • NORMAL</div>
                 </div>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-3">
-                <button id="retryBtn" class="flex-1 py-3 px-5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm tracking-wide transition cursor-pointer">
-                    PLAY AGAIN ↻
-                </button>
-                <button id="backToMenuBtn" class="flex-1 py-3 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-200 font-bold text-sm tracking-wide transition cursor-pointer">
-                    CHANGE MAP / DIFF
-                </button>
+                <button id="retryBtn" class="flex-1 py-3 px-5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm tracking-wide transition cursor-pointer">PLAY AGAIN ↻</button>
+                <button id="backToMenuBtn" class="flex-1 py-3 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-200 font-bold text-sm tracking-wide transition cursor-pointer">CHANGE SETTINGS</button>
             </div>
         </div>
     </div>
@@ -430,113 +354,52 @@
     <script>
         /**
          * ============================================================================
-         * NEXTBOT CHASE 3D // COMPLETE ENGINE (THREE.JS + WEB AUDIO API + PROCEDURAL PNGS)
+         * NEXTBOT CHASE 3D // B-HOPPING + CITIZEN MODEL + SELECTABLE DURATION
          * ============================================================================
          */
-
-        // --- GLOBAL CONFIGURATION & STATE ---
-        const SURVIVAL_GOAL_SECONDS = 300; // 5 minutes = 300 seconds
+        let SURVIVAL_GOAL_SECONDS = 300; // Default 5 mins
+        const ASSET_BASE = "https://raw.githubusercontent.com/VirtuosoOfCode/nextbot-assests/main/Assets/";
 
         const DIFFICULTIES = {
-            easy: {
-                label: 'EASY',
-                botCount: 2,
-                botBaseSpeed: 8.6,
-                botSprintSpeed: 10.6,
-                staminaDrain: 14,
-                staminaRegen: 24,
-                radarRange: 65,
-                fogMult: 1.25,
-                desc: '2 Nextbots • Slower Pace • Wide Radar Range'
-            },
-            normal: {
-                label: 'NORMAL',
-                botCount: 3,
-                botBaseSpeed: 10.4,
-                botSprintSpeed: 13.0,
-                staminaDrain: 20,
-                staminaRegen: 19,
-                radarRange: 52,
-                fogMult: 1.0,
-                desc: '3 Nextbots • Balanced Speed • Standard Radar'
-            },
-            hard: {
-                label: 'HARD',
-                botCount: 4,
-                botBaseSpeed: 12.1,
-                botSprintSpeed: 14.9,
-                staminaDrain: 25,
-                staminaRegen: 16,
-                radarRange: 44,
-                fogMult: 0.85,
-                desc: '4 Nextbots • Fast & Aggressive • Tight Stamina'
-            },
-            nightmare: {
-                label: 'NIGHTMARE',
-                botCount: 6,
-                botBaseSpeed: 13.4,
-                botSprintSpeed: 16.4,
-                staminaDrain: 28,
-                staminaRegen: 15,
-                radarRange: 38,
-                fogMult: 0.45,
-                desc: '6 Nextbots • Relentless Speed • Pitch-Dark Fog'
-            }
+            easy: { label: 'EASY', botCount: 2, botBaseSpeed: 8.6, botSprintSpeed: 10.6, staminaDrain: 14, staminaRegen: 24, fogMult: 1.25 },
+            normal: { label: 'NORMAL', botCount: 2, botBaseSpeed: 10.4, botSprintSpeed: 13.0, staminaDrain: 20, staminaRegen: 19, fogMult: 1.0 },
+            hard: { label: 'HARD', botCount: 2, botBaseSpeed: 12.1, botSprintSpeed: 14.9, staminaDrain: 25, staminaRegen: 16, fogMult: 0.85 },
+            nightmare: { label: 'NIGHTMARE', botCount: 2, botBaseSpeed: 13.4, botSprintSpeed: 16.4, staminaDrain: 28, staminaRegen: 15, fogMult: 0.45 }
         };
 
         const MAP_CONFIGS = {
-            backrooms: {
-                name: 'The Backrooms',
-                skyColor: 0x1a170b,
-                fogColor: 0x1f1b0d,
-                fogDensity: 0.036,
-                ambientIntensity: 0.65,
-                playerStart: { x: 0, z: 0 }
-            },
-            forest: {
-                name: 'Dark Forest',
-                skyColor: 0x060d13,
-                fogColor: 0x08121a,
-                fogDensity: 0.032,
-                ambientIntensity: 0.48,
-                playerStart: { x: 0, z: 0 }
-            },
-            crossroads: {
-                name: 'Crossroads',
-                skyColor: 0x3b82f6,
-                fogColor: 0x60a5fa,
-                fogDensity: 0.011,
-                ambientIntensity: 0.85,
-                playerStart: { x: 0, z: 0 }
-            },
-            construct: {
-                name: 'gm_construct',
-                skyColor: 0x7dd3fc,
-                fogColor: 0xbae6fd,
-                fogDensity: 0.009,
-                ambientIntensity: 0.9,
-                playerStart: { x: 0, z: 12 }
-            }
+            backrooms: { name: 'The Backrooms', skyColor: 0x1a170b, fogColor: 0x1f1b0d, fogDensity: 0.032, ambientIntensity: 0.75 },
+            forest: { name: 'Dark Forest', skyColor: 0x050c10, fogColor: 0x071118, fogDensity: 0.028, ambientIntensity: 0.55 },
+            crossroads: { name: 'Crossroads', skyColor: 0x2563eb, fogColor: 0x38bdf8, fogDensity: 0.008, ambientIntensity: 0.90 },
+            construct: { name: 'gm_construct', skyColor: 0x38bdf8, fogColor: 0xbae6fd, fogDensity: 0.007, ambientIntensity: 0.95 }
         };
 
-        // Game Runtime State
+        const BOT_DEFINITIONS = [
+            { id: 'obunga', name: 'Obunga', image: ASSET_BASE + 'Obunga.png', sound: ASSET_BASE + 'ObungaSound.mp3', speedMult: 1.0 },
+            { id: 'sanic', name: 'Sanic', image: ASSET_BASE + 'Sanic.png', sound: ASSET_BASE + 'SanicSound.mp3', speedMult: 1.15 }
+        ];
+
+        const ASSETS = {
+            menuMusic: ASSET_BASE + 'MainMenuMusic.mp3',
+            jumpscare: ASSET_BASE + 'Jumpscare.mp3'
+        };
+
         const state = {
             selectedMap: 'backrooms',
             selectedDiff: 'normal',
+            selectedTime: 300,
             isPlaying: false,
             isGameOver: false,
-            timeRemaining: SURVIVAL_GOAL_SECONDS,
+            timeRemaining: 300,
             timeSurvived: 0,
             distanceRan: 0,
             closestCall: 999,
-            musicEnabled: true,
+            menuMusicOn: true,
             flashlightOn: true,
-            bigScannerOpen: false,
-            lastRadarPingTime: 0,
-            screenShakeIntensity: 0
+            bigScannerOpen: false
         };
 
-        // Player Physics State
+        // Player physics + B-Hop momentum
         const player = {
             pos: new THREE.Vector3(0, 2.2, 0),
             vel: new THREE.Vector3(0, 0, 0),
@@ -545,1899 +408,653 @@
             height: 2.2,
             radius: 0.75,
             baseSpeed: 10.5,
-            sprintSpeed: 16.2,
-            jumpForce: 11.5,
+            sprintSpeed: 15.5,
+            jumpForce: 10.5,
             onGround: true,
             stamina: 100,
-            exhausted: false,
-            bobTimer: 0,
-            currentFov: 78
+            exhausted: false
         };
 
-        // Input State
         const keys = {};
-        let isPointerLocked = false;
-        let touchLookId = null;
-        let lastTouchX = 0;
-        let lastTouchY = 0;
+        let wallColliders = [];
+        let nextbots = [];
+        let mapGroup = null;
+        let citizenModel = null; // GMod Player Model
 
-        // World Colliders & Interactive Pads
-        let wallColliders = []; // Array of { minX, maxX, minZ, maxZ, minY, maxY, height }
-        let jumpPads = [];      // Array of { x, z, radius, boost }
-        let nextbots = [];      // Active Nextbot entities
-        let mapGroup = null;    // Three.js group holding current level geometry
+        let menuAudio = new Audio(ASSETS.menuMusic);
+        menuAudio.crossOrigin = "anonymous";
+        menuAudio.loop = true;
+        menuAudio.volume = 0.4;
 
-        // --- DOM ELEMENTS ---
+        let jumpscareAudio = new Audio(ASSETS.jumpscare);
+        jumpscareAudio.crossOrigin = "anonymous";
+
         const canvas = document.getElementById('gameCanvas');
-        const mainMenu = document.getElementById('mainMenu');
-        const hudContainer = document.getElementById('hudContainer');
-        const endScreen = document.getElementById('endScreen');
-        const timerDisplay = document.getElementById('timerDisplay');
-        const staminaBar = document.getElementById('staminaBar');
-        const staminaText = document.getElementById('staminaText');
-        const nearestDistHud = document.getElementById('nearestDistHud');
-        const dangerVignette = document.getElementById('dangerVignette');
-        const alertFeed = document.getElementById('alertFeed');
-        const pointerLockPrompt = document.getElementById('pointerLockPrompt');
-        const handheldScanner = document.getElementById('handheldScanner');
-        const scannerBotList = document.getElementById('scannerBotList');
-        const radarCanvas = document.getElementById('radarCanvas');
-        const radarCtx = radarCanvas.getContext('2d');
-        const bigScannerCanvas = document.getElementById('bigScannerCanvas');
-        const bigScannerCtx = bigScannerCanvas.getContext('2d');
-        const jumpscareCanvas = document.getElementById('jumpscareCanvas');
-        const jumpscareCtx = jumpscareCanvas.getContext('2d');
-
-        // ============================================================================
-        // 1. PROCEDURAL WEB AUDIO ENGINE (DYNAMIC CHASE SYNTH + SPATIAL NEXTBOT AUDIO)
-        // ============================================================================
-        class SoundEngine {
-            constructor() {
-                this.ctx = null;
-                this.masterGain = null;
-                this.musicGain = null;
-                this.sfxGain = null;
-                this.isInitialized = false;
-                this.musicTimer = null;
-                this.stepIndex = 0;
-                this.dangerLevel = 0; // 0 (safe) to 1 (nextbot right behind you)
-            }
-
-            init() {
-                if (this.isInitialized) {
-                    if (this.ctx.state === 'suspended') this.ctx.resume();
-                    return;
-                }
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                this.ctx = new AudioCtx();
-
-                this.masterGain = this.ctx.createGain();
-                this.masterGain.gain.value = 0.75;
-                this.masterGain.connect(this.ctx.destination);
-
-                this.musicGain = this.ctx.createGain();
-                this.musicGain.gain.value = state.musicEnabled ? 0.35 : 0;
-                this.musicGain.connect(this.masterGain);
-
-                this.sfxGain = this.ctx.createGain();
-                this.sfxGain.gain.value = 0.85;
-                this.sfxGain.connect(this.masterGain);
-
-                this.isInitialized = true;
-                this.startProceduralMusic();
-            }
-
-            setMusicEnabled(enabled) {
-                state.musicEnabled = enabled;
-                if (this.musicGain && this.ctx) {
-                    this.musicGain.gain.setTargetAtTime(enabled ? 0.35 : 0.0, this.ctx.currentTime, 0.08);
-                }
-            }
-
-            // Procedural Dark Synthwave / Breakcore Chase Loop that reacts to dangerLevel
-            startProceduralMusic() {
-                if (this.musicTimer) clearInterval(this.musicTimer);
-                const bassNotes = [55.0, 55.0, 65.41, 49.0, 55.0, 55.0, 73.42, 65.41]; // A1, C2, G1, D2
-                const arpNotes = [220, 261.63, 329.63, 392.0, 440, 392.0, 329.63, 261.63];
-
-                this.musicTimer = setInterval(() => {
-                    if (!this.isInitialized || !state.musicEnabled || !state.isPlaying || state.isGameOver) return;
-                    if (this.ctx.state === 'suspended') return;
-
-                    const now = this.ctx.currentTime;
-                    const step = this.stepIndex % 16;
-
-                    // 1. Deep Reese/Synth Bass pulse on eighth notes
-                    if (step % 2 === 0) {
-                        const freq = bassNotes[(step / 2) % bassNotes.length];
-                        const osc = this.ctx.createOscillator();
-                        const filter = this.ctx.createBiquadFilter();
-                        const gain = this.ctx.createGain();
-
-                        osc.type = 'sawtooth';
-                        osc.frequency.setValueAtTime(freq, now);
-
-                        filter.type = 'lowpass';
-                        // Filter opens up aggressively as Nextbots get closer!
-                        const cutoff = 160 + this.dangerLevel * 1400;
-                        filter.frequency.setValueAtTime(cutoff, now);
-                        filter.frequency.exponentialRampToValueAtTime(110, now + 0.22);
-
-                        gain.gain.setValueAtTime(0.28, now);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
-
-                        osc.connect(filter);
-                        filter.connect(gain);
-                        gain.connect(this.musicGain);
-
-                        osc.start(now);
-                        osc.stop(now + 0.25);
-                    }
-
-                    // 2. Kick drum & Amen-style snare when danger > 0.25
-                    if (step % 4 === 0) {
-                        this.triggerKick(now, 0.35 + this.dangerLevel * 0.35);
-                    }
-                    if ((step === 4 || step === 12 || (this.dangerLevel > 0.55 && step === 14))) {
-                        this.triggerSnare(now, 0.15 + this.dangerLevel * 0.35);
-                    }
-
-                    // 3. Tense High Synth Arp when Nextbot is within medium/close range
-                    if (this.dangerLevel > 0.2) {
-                        const arpFreq = arpNotes[step % arpNotes.length] * (this.dangerLevel > 0.7 ? 2 : 1);
-                        const osc = this.ctx.createOscillator();
-                        const gain = this.ctx.createGain();
-                        osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(arpFreq, now);
-                        gain.gain.setValueAtTime(0.06 * this.dangerLevel, now);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
-                        osc.connect(gain);
-                        gain.connect(this.musicGain);
-                        osc.start(now);
-                        osc.stop(now + 0.12);
-                    }
-
-                    this.stepIndex++;
-                }, 125); // 120 BPM 16th notes
-            }
-
-            triggerKick(time, vol) {
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(135, time);
-                osc.frequency.exponentialRampToValueAtTime(36, time + 0.14);
-                gain.gain.setValueAtTime(vol, time);
-                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.16);
-                osc.connect(gain);
-                gain.connect(this.musicGain);
-                osc.start(time);
-                osc.stop(time + 0.17);
-            }
-
-            triggerSnare(time, vol) {
-                const bufferSize = this.ctx.sampleRate * 0.12;
-                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
-                const noise = this.ctx.createBufferSource();
-                noise.buffer = buffer;
-
-                const filter = this.ctx.createBiquadFilter();
-                filter.type = 'highpass';
-                filter.frequency.value = 900;
-
-                const gain = this.ctx.createGain();
-                gain.gain.setValueAtTime(vol, time);
-                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.11);
-
-                noise.connect(filter);
-                filter.connect(gain);
-                gain.connect(this.musicGain);
-                noise.start(time);
-            }
-
-            // Create a continuous spatial proximity voice for each Nextbot
-            createBotAudioLoop(botTypeIndex) {
-                if (!this.isInitialized) return null;
-                const now = this.ctx.currentTime;
-
-                const osc1 = this.ctx.createOscillator();
-                const osc2 = this.ctx.createOscillator();
-                const filter = this.ctx.createBiquadFilter();
-                const panner = this.ctx.createStereoPanner();
-                const gain = this.ctx.createGain();
-
-                // Distinct creepy tonal signatures per Nextbot archetype
-                const profiles = [
-                    { t1: 'sawtooth', f1: 72, t2: 'square', f2: 75.5, filterFreq: 420 },   // Obunga deep buzz
-                    { t1: 'sine', f1: 310, t2: 'sawtooth', f2: 317, filterFreq: 900 },   // Siren / Eerie choir
-                    { t1: 'square', f1: 110, t2: 'sawtooth', f2: 164.8, filterFreq: 650 }, // Glitch dissonance
-                    { t1: 'sawtooth', f1: 58, t2: 'triangle', f2: 116.5, filterFreq: 350 }, // Heavy sub rumble
-                    { t1: 'triangle', f1: 440, t2: 'sine', f2: 446, filterFreq: 1200 },  // High haunting whistle
-                    { t1: 'sawtooth', f1: 92, t2: 'square', f2: 138.6, filterFreq: 550 }   // Demonic tritone
-                ];
-                const p = profiles[botTypeIndex % profiles.length];
-
-                osc1.type = p.t1;
-                osc1.frequency.setValueAtTime(p.f1, now);
-                osc2.type = p.t2;
-                osc2.frequency.setValueAtTime(p.f2, now);
-
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(p.filterFreq, now);
-
-                gain.gain.setValueAtTime(0.0001, now);
-
-                osc1.connect(filter);
-                osc2.connect(filter);
-                filter.connect(panner);
-                panner.connect(gain);
-                gain.connect(this.sfxGain);
-
-                osc1.start(now);
-                osc2.start(now);
-
-                return { osc1, osc2, filter, panner, gain, baseF1: p.f1, baseF2: p.f2, baseFilter: p.filterFreq };
-            }
-
-            playRadarPing(urgency = 0.5) {
-                if (!this.isInitialized || !state.isPlaying) return;
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                const freq = 950 + urgency * 650;
-                osc.frequency.setValueAtTime(freq, now);
-                osc.frequency.exponentialRampToValueAtTime(freq * 1.15, now + 0.09);
-
-                gain.gain.setValueAtTime(0.08 + urgency * 0.08, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
-
-                osc.connect(gain);
-                gain.connect(this.sfxGain);
-                osc.start(now);
-                osc.stop(now + 0.15);
-            }
-
-            playJumpSound() {
-                if (!this.isInitialized) return;
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(140, now);
-                osc.frequency.exponentialRampToValueAtTime(290, now + 0.12);
-                gain.gain.setValueAtTime(0.14, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
-                osc.connect(gain);
-                gain.connect(this.sfxGain);
-                osc.start(now);
-                osc.stop(now + 0.14);
-            }
-
-            playFlashlightClick() {
-                if (!this.isInitialized) return;
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(1200, now);
-                osc.frequency.exponentialRampToValueAtTime(400, now + 0.03);
-                gain.gain.setValueAtTime(0.15, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
-                osc.connect(gain);
-                gain.connect(this.sfxGain);
-                osc.start(now);
-                osc.stop(now + 0.04);
-            }
-
-            playJumpscareScream() {
-                if (!this.isInitialized) return;
-                const now = this.ctx.currentTime;
-
-                // Harsh distorted noise burst + dissonant screech
-                const bufferSize = this.ctx.sampleRate * 0.9;
-                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.45));
-                }
-
-                const noise = this.ctx.createBufferSource();
-                noise.buffer = buffer;
-
-                const noiseGain = this.ctx.createGain();
-                noiseGain.gain.setValueAtTime(0.85, now);
-                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.85);
-
-                noise.connect(noiseGain);
-                noiseGain.connect(this.sfxGain);
-                noise.start(now);
-
-                // Dissonant dual sawtooth shriek
-                [190, 268, 540].forEach(freq => {
-                    const osc = this.ctx.createOscillator();
-                    const g = this.ctx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(freq, now);
-                    osc.frequency.linearRampToValueAtTime(freq * 0.65, now + 0.8);
-                    g.gain.setValueAtTime(0.32, now);
-                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.82);
-                    osc.connect(g);
-                    g.connect(this.sfxGain);
-                    osc.start(now);
-                    osc.stop(now + 0.85);
-                });
-            }
-
-            playVictoryChime() {
-                if (!this.isInitialized) return;
-                const now = this.ctx.currentTime;
-                const notes = [261.63, 329.63, 392.0, 523.25, 659.25];
-                notes.forEach((freq, idx) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, now + idx * 0.11);
-                    gain.gain.setValueAtTime(0.22, now + idx * 0.11);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.11 + 0.55);
-                    osc.connect(gain);
-                    gain.connect(this.sfxGain);
-                    osc.start(now + idx * 0.11);
-                    osc.stop(now + idx * 0.11 + 0.6);
-                });
-            }
-        }
-
-        const soundEngine = new SoundEngine();
-
-        // ============================================================================
-        // 2. PROCEDURAL NEXTBOT PNG SPRITE GENERATOR (OFFSCREEN HIGH-RES CANVASES)
-        // ============================================================================
-        const NEXTBOT_ARCHETYPES = [
-            { name: 'OBUNGA.PNG', color: '#ef4444', style: 'obunga' },
-            { name: 'ALTERNATE.PNG', color: '#f97316', style: 'alternate' },
-            { name: 'SANIC_EXE.PNG', color: '#3b82f6', style: 'sanic' },
-            { name: 'SMILER.PNG', color: '#eab308', style: 'smiler' },
-            { name: 'A-60_GLITCH.PNG', color: '#ec4899', style: 'glitch' },
-            { name: 'WATCHER.PNG', color: '#a855f7', style: 'watcher' }
-        ];
-
-        function generateNextbotTexture(archetype) {
-            const c = document.createElement('canvas');
-            c.width = 512;
-            c.height = 512;
-            const ctx = c.getContext('2d');
-
-            ctx.clearRect(0, 0, 512, 512);
-
-            // Subtle outer glow aura so the PNG cutout pops in dark corridors
-            const aura = ctx.createRadialGradient(256, 256, 90, 256, 256, 245);
-            aura.addColorStop(0, 'rgba(0, 0, 0, 0.95)');
-            aura.addColorStop(0.72, 'rgba(15, 15, 20, 0.85)');
-            aura.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = aura;
-            ctx.fillRect(0, 0, 512, 512);
-
-            if (archetype.style === 'obunga') {
-                // Iconic uncanny elongated dark humanoid face cutout
-                ctx.fillStyle = '#181412';
-                ctx.beginPath();
-                ctx.ellipse(256, 265, 138, 195, 0, 0, Math.PI * 2);
-                ctx.fill();
-
-                // High-contrast uncanny shading
-                const faceGrad = ctx.createRadialGradient(256, 230, 30, 256, 265, 185);
-                faceGrad.addColorStop(0, '#4a3d36');
-                faceGrad.addColorStop(0.65, '#1f1916');
-                faceGrad.addColorStop(1, '#090707');
-                ctx.fillStyle = faceGrad;
-                ctx.beginPath();
-                ctx.ellipse(256, 265, 130, 188, 0, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Wide staring uncanny eyes
-                [-54, 54].forEach(offsetX => {
-                    ctx.fillStyle = '#f8fafc';
-                    ctx.beginPath();
-                    ctx.ellipse(256 + offsetX, 205, 34, 24, 0, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.fillStyle = '#020617';
-                    ctx.beginPath();
-                    ctx.arc(256 + offsetX, 205, 14, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.fillStyle = '#ef4444';
-                    ctx.beginPath();
-                    ctx.arc(256 + offsetX, 205, 4, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-
-                // Uncanny wide mouth / nose ridge
-                ctx.fillStyle = '#090707';
-                ctx.beginPath();
-                ctx.ellipse(256, 355, 68, 34, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = '#6b584c';
-                ctx.lineWidth = 4;
-                ctx.stroke();
-
-            } else if (archetype.style === 'alternate') {
-                // Mandela-style pitch black distorted silhouette with wide manic grin
-                ctx.fillStyle = '#050508';
-                ctx.beginPath();
-                ctx.moveTo(130, 460);
-                ctx.quadraticCurveTo(115, 140, 256, 95);
-                ctx.quadraticCurveTo(397, 140, 382, 460);
-                ctx.closePath();
-                ctx.fill();
-
-                // Hollow sunken eyes
-                [-52, 52].forEach(ox => {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.beginPath();
-                    ctx.arc(256 + ox, 215, 22, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.fillStyle = '#000000';
-                    ctx.beginPath();
-                    ctx.arc(256 + ox, 215, 15, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.fillStyle = '#ffffff';
-                    ctx.beginPath();
-                    ctx.arc(256 + ox + 3, 212, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-
-                // Distorted grin with teeth
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 7;
-                ctx.beginPath();
-                ctx.arc(256, 285, 82, 0.15 * Math.PI, 0.85 * Math.PI);
-                ctx.stroke();
-
-            } else if (archetype.style === 'sanic') {
-                // Cursed MS-Paint style blue speedster meme PNG
-                ctx.fillStyle = '#1d4ed8';
-                ctx.beginPath();
-                ctx.arc(265, 265, 145, 0, Math.PI * 2);
-                ctx.fill();
-                // Spikes
-                for (let i = 0; i < 4; i++) {
-                    ctx.beginPath();
-                    ctx.moveTo(220, 140 + i * 55);
-                    ctx.lineTo(75, 110 + i * 65);
-                    ctx.lineTo(185, 210 + i * 45);
-                    ctx.fill();
-                }
-                // Tan muzzle
-                ctx.fillStyle = '#fed7aa';
-                ctx.beginPath();
-                ctx.ellipse(295, 305, 85, 55, 0.1, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Googly bloodshot eyes
-                [-18, 42].forEach((ox, idx) => {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.beginPath();
-                    ctx.arc(275 + ox, 225, 32 - idx * 4, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.strokeStyle = '#000';
-                    ctx.lineWidth = 4;
-                    ctx.stroke();
-                    ctx.fillStyle = '#dc2626';
-                    ctx.beginPath();
-                    ctx.arc(282 + ox, 225, 11, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-
-                // Jagged grin
-                ctx.strokeStyle = '#000000';
-                ctx.lineWidth = 6;
-                ctx.beginPath();
-                ctx.moveTo(225, 315);
-                ctx.lineTo(265, 338);
-                ctx.lineTo(315, 325);
-                ctx.lineTo(360, 295);
-                ctx.stroke();
-
-            } else if (archetype.style === 'smiler') {
-                // Pitch void with glowing neon yellow/white teeth & eyes
-                ctx.fillStyle = '#030303';
-                ctx.beginPath();
-                ctx.arc(256, 256, 175, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.shadowColor = '#facc15';
-                ctx.shadowBlur = 24;
-                ctx.fillStyle = '#fef08a';
-                ctx.beginPath();
-                ctx.ellipse(195, 195, 22, 34, -0.15, 0, Math.PI * 2);
-                ctx.ellipse(317, 195, 22, 34, 0.15, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Giant crescent smile with vertical teeth
-                ctx.strokeStyle = '#fef08a';
-                ctx.lineWidth = 10;
-                ctx.beginPath();
-                ctx.arc(256, 260, 115, 0.12 * Math.PI, 0.88 * Math.PI);
-                ctx.stroke();
-
-                for (let a = 0.2; a <= 0.8; a += 0.1) {
-                    const tx = 256 + Math.cos(a * Math.PI) * 115;
-                    const ty = 260 + Math.sin(a * Math.PI) * 115;
-                    ctx.beginPath();
-                    ctx.moveTo(tx, ty - 14);
-                    ctx.lineTo(tx, ty + 14);
-                    ctx.stroke();
-                }
-                ctx.shadowBlur = 0;
-
-            } else if (archetype.style === 'glitch') {
-                // RGB Chromatic aberration skull/face slices
-                const colors = ['#ff0055', '#00f0ff', '#ffffff'];
-                colors.forEach((col, i) => {
-                    const ox = (i - 1) * 14;
-                    ctx.fillStyle = col;
-                    ctx.globalAlpha = i === 2 ? 0.95 : 0.65;
-                    ctx.fillRect(150 + ox, 110, 212, 290);
-                });
-                ctx.globalAlpha = 1;
-                ctx.fillStyle = '#050505';
-                ctx.fillRect(175, 165, 55, 45);
-                ctx.fillRect(282, 165, 55, 45);
-                ctx.fillRect(185, 285, 142, 65);
-                // Glitch bars
-                ctx.fillStyle = '#ec4899';
-                ctx.fillRect(95, 230, 320, 14);
-                ctx.fillStyle = '#22d3ee';
-                ctx.fillRect(120, 330, 290, 10);
-
-            } else {
-                // Watcher: Giant bloodshot floating eye entity
-                ctx.fillStyle = '#1e1b4b';
-                ctx.beginPath();
-                ctx.arc(256, 256, 175, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#f8fafc';
-                ctx.beginPath();
-                ctx.ellipse(256, 256, 155, 105, 0, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#9333ea';
-                ctx.beginPath();
-                ctx.arc(256, 256, 68, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#020617';
-                ctx.beginPath();
-                ctx.arc(256, 256, 34, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#ffffff';
-                ctx.beginPath();
-                ctx.arc(238, 236, 12, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            // Crisp PNG sticker outline border
-            ctx.strokeStyle = archetype.color;
-            ctx.lineWidth = 4;
-            ctx.setLineDash([12, 8]);
-            ctx.strokeRect(24, 24, 464, 464);
-
-            const tex = new THREE.CanvasTexture(c);
-            tex.needsUpdate = true;
-            return { texture: tex, canvas: c };
-        }
-
-        // ============================================================================
-        // 3. PROCEDURAL ENVIRONMENT TEXTURES (BACKROOMS, FOREST, CROSSROADS, CONSTRUCT)
-        // ============================================================================
-        function createProceduralTexture(type) {
-            const c = document.createElement('canvas');
-            c.width = 256;
-            c.height = 256;
-            const ctx = c.getContext('2d');
-
-            if (type === 'backrooms_wall') {
-                ctx.fillStyle = '#c4ab47';
-                ctx.fillRect(0, 0, 256, 256);
-                // Vertical wallpaper stripes & damp stains
-                ctx.fillStyle = '#b39936';
-                for (let x = 0; x < 256; x += 32) {
-                    ctx.fillRect(x, 0, 14, 256);
-                }
-                // Subtle geometric wallpaper pattern
-                ctx.strokeStyle = 'rgba(130, 108, 25, 0.35)';
-                ctx.lineWidth = 2;
-                for (let y = 16; y < 256; y += 48) {
-                    for (let x = 16; x < 256; x += 48) {
-                        ctx.strokeRect(x, y, 16, 16);
-                    }
-                }
-                // Baseboard
-                ctx.fillStyle = '#5c4d1c';
-                ctx.fillRect(0, 236, 256, 20);
-            } else if (type === 'backrooms_carpet') {
-                ctx.fillStyle = '#8c7732';
-                ctx.fillRect(0, 0, 256, 256);
-                for (let i = 0; i < 3500; i++) {
-                    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(60,48,14,0.28)' : 'rgba(175,152,72,0.22)';
-                    ctx.fillRect(Math.random() * 256, Math.random() * 256, 3, 3);
-                }
-            } else if (type === 'backrooms_ceiling') {
-                ctx.fillStyle = '#d6d3c9';
-                ctx.fillRect(0, 0, 256, 256);
-                ctx.strokeStyle = '#8c8980';
-                ctx.lineWidth = 4;
-                ctx.strokeRect(2, 2, 124, 124);
-                ctx.strokeRect(130, 2, 124, 124);
-                ctx.strokeRect(2, 130, 124, 124);
-                ctx.strokeRect(130, 130, 124, 124);
-                // Fluorescent light panel in one tile
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(14, 14, 100, 100);
-            } else if (type === 'forest_ground') {
-                ctx.fillStyle = '#142618';
-                ctx.fillRect(0, 0, 256, 256);
-                for (let i = 0; i < 3000; i++) {
-                    ctx.fillStyle = Math.random() > 0.4 ? '#1e3823' : '#0d1a10';
-                    ctx.fillRect(Math.random() * 256, Math.random() * 256, 4, 4);
-                }
-            } else if (type === 'roblox_studs') {
-                ctx.fillStyle = '#64748b';
-                ctx.fillRect(0, 0, 256, 256);
-                ctx.strokeStyle = 'rgba(0,0,0,0.25)';
-                ctx.lineWidth = 3;
-                for (let y = 0; y < 256; y += 64) {
-                    for (let x = 0; x < 256; x += 64) {
-                        ctx.strokeRect(x, y, 64, 64);
-                        ctx.beginPath();
-                        ctx.arc(x + 32, y + 32, 16, 0, Math.PI * 2);
-                        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-                        ctx.stroke();
-                    }
-                }
-            } else if (type === 'construct_grass') {
-                ctx.fillStyle = '#4d7c0f';
-                ctx.fillRect(0, 0, 256, 256);
-                for (let i = 0; i < 2800; i++) {
-                    ctx.fillStyle = Math.random() > 0.5 ? '#65a30d' : '#3f6212';
-                    ctx.fillRect(Math.random() * 256, Math.random() * 256, 3, 5);
-                }
-            } else if (type === 'concrete') {
-                ctx.fillStyle = '#94a3b8';
-                ctx.fillRect(0, 0, 256, 256);
-                ctx.strokeStyle = 'rgba(51, 65, 85, 0.35)';
-                ctx.lineWidth = 3;
-                ctx.strokeRect(0, 0, 128, 128);
-                ctx.strokeRect(128, 128, 128, 128);
-                for (let i = 0; i < 1500; i++) {
-                    ctx.fillStyle = 'rgba(30,41,59,0.12)';
-                    ctx.fillRect(Math.random() * 256, Math.random() * 256, 2, 2);
-                }
-            }
-
-            const tex = new THREE.CanvasTexture(c);
-            tex.wrapS = THREE.RepeatWrapping;
-            tex.wrapT = THREE.RepeatWrapping;
-            return tex;
-        }
-
-        // ============================================================================
-        // 4. THREE.JS SCENE, LIGHTING & MAP BUILDERS
-        // ============================================================================
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(78, window.innerWidth / window.innerHeight, 0.1, 320);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, powerPreference: 'high-performance' });
+        const camera = new THREE.PerspectiveCamera(78, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-        // Ambient & Directional Light
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.setCrossOrigin('anonymous');
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.65);
-        dirLight.position.set(40, 80, 30);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+        dirLight.position.set(40, 70, 40);
+        dirLight.castShadow = true;
         scene.add(dirLight);
 
-        // Player Handheld Flashlight (SpotLight attached to camera)
-        const flashlight = new THREE.SpotLight(0xfffbeb, 2.2, 65, Math.PI / 5.2, 0.45, 1.1);
-        flashlight.position.set(0, 0, 0);
-        flashlight.target.position.set(0, 0, -1);
+        const flashlight = new THREE.SpotLight(0xfff8e7, 5.0, 60, Math.PI / 6, 0.4, 1.5);
+        flashlight.castShadow = true;
         camera.add(flashlight);
+        flashlight.position.set(0, 0, 0);
+        flashlight.target.position.set(0, 0, -20);
         camera.add(flashlight.target);
         scene.add(camera);
 
-        // Helper to add a solid box to both Three.js scene and AABB collision list
-        function addColliderBox(parent, x, y, z, w, h, d, material, addCollision = true) {
-            const geo = new THREE.BoxGeometry(w, h, d);
-            const mesh = new THREE.Mesh(geo, material);
-            mesh.position.set(x, y, z);
-            parent.add(mesh);
+        // --- CREATE GMOD CITIZEN PLAYER MODEL ---
+        function createCitizenPlayerModel() {
+            const group = new THREE.Group();
 
-            if (addCollision) {
-                wallColliders.push({
-                    minX: x - w / 2,
-                    maxX: x + w / 2,
-                    minY: y - h / 2,
-                    maxY: y + h / 2,
-                    minZ: z - d / 2,
-                    maxZ: z + d / 2
-                });
-            }
-            return mesh;
+            // Torso (Dark jacket matching reference image)
+            const torsoGeo = new THREE.BoxGeometry(0.7, 0.9, 0.4);
+            const torsoMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 });
+            const torso = new THREE.Mesh(torsoGeo, torsoMat);
+            torso.position.y = 0.55;
+            torso.castShadow = true;
+            group.add(torso);
+
+            // Head (Matching skin tone and short hair from reference)
+            const headGeo = new THREE.BoxGeometry(0.35, 0.4, 0.35);
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xd4b293, roughness: 0.8 });
+            const head = new THREE.Mesh(headGeo, headMat);
+            head.position.y = 1.2;
+            head.castShadow = true;
+            group.add(head);
+
+            // Hair top
+            const hairGeo = new THREE.BoxGeometry(0.36, 0.12, 0.36);
+            const hairMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.9 });
+            const hair = new THREE.Mesh(hairGeo, hairMat);
+            hair.position.y = 1.42;
+            group.add(hair);
+
+            // Legs
+            const legGeo = new THREE.BoxGeometry(0.3, 0.8, 0.3);
+            const legMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7 });
+            
+            const leftLeg = new THREE.Mesh(legGeo, legMat);
+            leftLeg.position.set(-0.2, -0.35, 0);
+            group.add(leftLeg);
+
+            const rightLeg = new THREE.Mesh(legGeo, legMat);
+            rightLeg.position.set(0.2, -0.35, 0);
+            group.add(rightLeg);
+
+            // Position model slightly forward & downward relative to camera so player sees their body looking down/walking, but camera never clips inside the head
+            group.position.set(0, -0.4, -0.6);
+            camera.add(group);
+            citizenModel = group;
         }
+        createCitizenPlayerModel();
 
-        // Build Map Geometry based on selection
-        function buildMap(mapId) {
-            if (mapGroup) {
-                scene.remove(mapGroup);
-            }
+        // --- MAP BUILDERS ---
+        function buildMap(mapKey) {
+            if (mapGroup) scene.remove(mapGroup);
             mapGroup = new THREE.Group();
             wallColliders = [];
-            jumpPads = [];
 
-            const cfg = MAP_CONFIGS[mapId];
+            const cfg = MAP_CONFIGS[mapKey];
             const diff = DIFFICULTIES[state.selectedDiff];
-
             scene.background = new THREE.Color(cfg.skyColor);
             scene.fog = new THREE.FogExp2(cfg.fogColor, cfg.fogDensity / diff.fogMult);
-            ambientLight.intensity = state.selectedDiff === 'nightmare' ? 0.18 : cfg.ambientIntensity;
-            dirLight.intensity = state.selectedDiff === 'nightmare' ? 0.12 : 0.65;
+            ambientLight.intensity = state.selectedDiff === 'nightmare' ? 0.12 : cfg.ambientIntensity;
 
-            const ARENA_HALF = 75; // 150x150 playable world
-
-            // Outer Perimeter Walls (all maps)
-            const borderMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 });
-            addColliderBox(mapGroup, 0, 12, -ARENA_HALF - 2, ARENA_HALF * 2 + 8, 24, 4, borderMat);
-            addColliderBox(mapGroup, 0, 12, ARENA_HALF + 2, ARENA_HALF * 2 + 8, 24, 4, borderMat);
-            addColliderBox(mapGroup, -ARENA_HALF - 2, 12, 0, 4, 24, ARENA_HALF * 2 + 8, borderMat);
-            addColliderBox(mapGroup, ARENA_HALF + 2, 12, 0, 4, 24, ARENA_HALF * 2 + 8, borderMat);
-
-            if (mapId === 'backrooms') {
-                const wallTex = createProceduralTexture('backrooms_wall');
-                wallTex.repeat.set(3, 1);
-                const carpetTex = createProceduralTexture('backrooms_carpet');
-                carpetTex.repeat.set(28, 28);
-                const ceilTex = createProceduralTexture('backrooms_ceiling');
-                ceilTex.repeat.set(28, 28);
-
-                const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.85 });
-                const floorMat = new THREE.MeshStandardMaterial({ map: carpetTex, roughness: 0.95 });
-                const ceilMat = new THREE.MeshStandardMaterial({ map: ceilTex, emissive: 0x332e1a, emissiveIntensity: 0.35 });
-
-                // Floor & Drop Ceiling
-                const floor = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), floorMat);
+            if (mapKey === 'backrooms') {
+                const floorGeo = new THREE.PlaneGeometry(160, 160);
+                const floorMat = new THREE.MeshStandardMaterial({ color: 0xc2a83e, roughness: 0.6 });
+                const floor = new THREE.Mesh(floorGeo, floorMat);
                 floor.rotation.x = -Math.PI / 2;
+                floor.receiveShadow = true;
                 mapGroup.add(floor);
 
-                const ceil = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), ceilMat);
+                const ceilGeo = new THREE.PlaneGeometry(160, 160);
+                const ceilMat = new THREE.MeshStandardMaterial({ color: 0x3d351b, roughness: 0.8 });
+                const ceil = new THREE.Mesh(ceilGeo, ceilMat);
                 ceil.rotation.x = Math.PI / 2;
-                ceil.position.y = 8.5;
+                ceil.position.y = 5.5;
                 mapGroup.add(ceil);
 
-                // Backrooms Maze Walls & Pillars (Grid-aligned with wide hallways so Nextbots & player flow smoothly)
-                const layout = [
-                    // Inner cross-corridors with open doorways
-                    { x: -18, z: -18, w: 18, d: 2 },
-                    { x: 18, z: -18, w: 18, d: 2 },
-                    { x: -18, z: 18, w: 18, d: 2 },
-                    { x: 18, z: 18, w: 18, d: 2 },
+                const wallMat = new THREE.MeshStandardMaterial({ color: 0xd4bc53, roughness: 0.5 });
+                for (let x = -60; x <= 60; x += 12) {
+                    for (let z = -60; z <= 60; z += 12) {
+                        if (Math.random() > 0.35 && !(Math.abs(x) < 12 && Math.abs(z) < 12)) {
+                            const wLen = 12;
+                            const isHoriz = Math.random() > 0.5;
+                            const wGeo = new THREE.BoxGeometry(isHoriz ? wLen : 1.2, 5.5, isHoriz ? 1.2 : wLen);
+                            const wall = new THREE.Mesh(wGeo, wallMat);
+                            wall.position.set(x + (isHoriz ? 0 : 6), 2.75, z + (isHoriz ? 6 : 0));
+                            wall.castShadow = true;
+                            wall.receiveShadow = true;
+                            mapGroup.add(wall);
 
-                    { x: -26, z: 0, w: 2, d: 22 },
-                    { x: 26, z: 0, w: 2, d: 22 },
-
-                    // Outer labyrinth partitions
-                    { x: -45, z: -38, w: 26, d: 2 },
-                    { x: 0, z: -42, w: 24, d: 2 },
-                    { x: 45, z: -38, w: 26, d: 2 },
-
-                    { x: -45, z: 38, w: 26, d: 2 },
-                    { x: 0, z: 42, w: 24, d: 2 },
-                    { x: 45, z: 38, w: 26, d: 2 },
-
-                    { x: -48, z: -12, w: 2, d: 24 },
-                    { x: -48, z: 16, w: 2, d: 18 },
-                    { x: 48, z: -12, w: 2, d: 24 },
-                    { x: 48, z: 16, w: 2, d: 18 },
-
-                    // Classic Backrooms square support pillars
-                    { x: -12, z: 0, w: 3.5, d: 3.5 },
-                    { x: 12, z: 0, w: 3.5, d: 3.5 },
-                    { x: 0, z: -26, w: 3.5, d: 3.5 },
-                    { x: 0, z: 26, w: 3.5, d: 3.5 },
-                    { x: -34, z: -55, w: 4, d: 4 },
-                    { x: 34, z: -55, w: 4, d: 4 },
-                    { x: -34, z: 55, w: 4, d: 4 },
-                    { x: 34, z: 55, w: 4, d: 4 }
-                ];
-
-                layout.forEach(item => {
-                    addColliderBox(mapGroup, item.x, 4.25, item.z, item.w, 8.5, item.d, wallMat);
-                });
-
-            } else if (mapId === 'forest') {
-                const groundTex = createProceduralTexture('forest_ground');
-                groundTex.repeat.set(30, 30);
-                const groundMat = new THREE.MeshStandardMaterial({ map: groundTex, roughness: 0.95 });
-
-                const ground = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), groundMat);
-                ground.rotation.x = -Math.PI / 2;
-                mapGroup.add(ground);
-
-                const trunkMat = new THREE.MeshStandardMaterial({ color: 0x2d1e14, roughness: 0.95 });
-                const leavesMat = new THREE.MeshStandardMaterial({ color: 0x0f2918, roughness: 0.9 });
-                const woodCabinMat = new THREE.MeshStandardMaterial({ color: 0x452c1a, roughness: 0.9 });
-
-                // Abandoned Wooden Cabin in the center-north
-                addColliderBox(mapGroup, 0, 3.5, -28, 16, 7, 1.2, woodCabinMat);
-                addColliderBox(mapGroup, -7.4, 3.5, -20, 1.2, 7, 15, woodCabinMat);
-                addColliderBox(mapGroup, 7.4, 3.5, -20, 1.2, 7, 15, woodCabinMat);
-                // Cabin Roof
-                addColliderBox(mapGroup, 0, 7.4, -20, 18, 0.8, 18, woodCabinMat, false);
-
-                // Deterministic Pine Trees scattered around the forest (leaving spawn clear)
-                for (let i = 0; i < 68; i++) {
-                    const angle = i * 2.39996; // Golden angle distribution
-                    const radius = 13 + (i / 68) * 58;
-                    const tx = Math.cos(angle) * radius;
-                    const tz = Math.sin(angle) * radius;
-
-                    // Keep cabin interior clear
-                    if (Math.abs(tx) < 11 && tz > -32 && tz < -10) continue;
-
-                    // Tree trunk collider
-                    addColliderBox(mapGroup, tx, 4, tz, 1.6, 8, 1.6, trunkMat);
-
-                    // Layered pine foliage cones
-                    const cone1 = new THREE.Mesh(new THREE.ConeGeometry(4.2, 8, 7), leavesMat);
-                    cone1.position.set(tx, 8.5, tz);
-                    mapGroup.add(cone1);
-
-                    const cone2 = new THREE.Mesh(new THREE.ConeGeometry(3.1, 7, 7), leavesMat);
-                    cone2.position.set(tx, 12.5, tz);
-                    mapGroup.add(cone2);
+                            wallColliders.push({
+                                minX: wall.position.x - (isHoriz ? wLen/2 : 0.6),
+                                maxX: wall.position.x + (isHoriz ? wLen/2 : 0.6),
+                                minZ: wall.position.z - (isHoriz ? 0.6 : wLen/2),
+                                maxZ: wall.position.z + (isHoriz ? 0.6 : wLen/2)
+                            });
+                        }
+                    }
                 }
+            } else if (mapKey === 'forest') {
+                const floorGeo = new THREE.PlaneGeometry(200, 200);
+                const floorMat = new THREE.MeshStandardMaterial({ color: 0x162b1e, roughness: 0.9 });
+                const floor = new THREE.Mesh(floorGeo, floorMat);
+                floor.rotation.x = -Math.PI / 2;
+                floor.receiveShadow = true;
+                mapGroup.add(floor);
 
-            } else if (mapId === 'crossroads') {
-                const studTex = createProceduralTexture('roblox_studs');
-                studTex.repeat.set(32, 32);
-                const baseMat = new THREE.MeshStandardMaterial({ map: studTex, color: 0x4ade80, roughness: 0.6 });
-                const roadMat = new THREE.MeshStandardMaterial({ map: studTex, color: 0x334155, roughness: 0.7 });
+                const trunkMat = new THREE.MeshStandardMaterial({ color: 0x422a18, roughness: 0.8 });
+                const leavesMat = new THREE.MeshStandardMaterial({ color: 0x1e3f29, roughness: 0.7 });
+                for (let i = 0; i < 90; i++) {
+                    const tx = (Math.random() - 0.5) * 170;
+                    const tz = (Math.random() - 0.5) * 170;
+                    if (Math.hypot(tx, tz) < 14) continue;
 
-                const ground = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), baseMat);
-                ground.rotation.x = -Math.PI / 2;
-                mapGroup.add(ground);
+                    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.2, 10, 8), trunkMat);
+                    trunk.position.set(tx, 5, tz);
+                    trunk.castShadow = true;
+                    mapGroup.add(trunk);
 
-                // Iconic Crossroads intersecting highways
-                addColliderBox(mapGroup, 0, 0.08, 0, 150, 0.16, 16, roadMat, false);
-                addColliderBox(mapGroup, 0, 0.08, 0, 16, 0.16, 150, roadMat, false);
+                    const leaves = new THREE.Mesh(new THREE.ConeGeometry(5, 12, 8), leavesMat);
+                    leaves.position.set(tx, 12, tz);
+                    leaves.castShadow = true;
+                    mapGroup.add(leaves);
 
-                // 4 Colored Corner Towers / Fortresses
-                const towerConfigs = [
-                    { x: -34, z: -34, color: 0xef4444 }, // Red Tower
-                    { x: 34, z: -34, color: 0x3b82f6 },  // Blue Tower
-                    { x: -34, z: 34, color: 0xeab308 },  // Yellow Tower
-                    { x: 34, z: 34, color: 0xa855f7 }    // Purple Tower
-                ];
+                    wallColliders.push({ minX: tx - 1.3, maxX: tx + 1.3, minZ: tz - 1.3, maxZ: tz + 1.3 });
+                }
+            } else if (mapKey === 'crossroads' || mapKey === 'construct') {
+                const floorGeo = new THREE.PlaneGeometry(180, 180);
+                const floorMat = new THREE.MeshStandardMaterial({ color: mapKey === 'crossroads' ? 0x475569 : 0x334155, roughness: 0.4 });
+                const floor = new THREE.Mesh(floorGeo, floorMat);
+                floor.rotation.x = -Math.PI / 2;
+                floor.receiveShadow = true;
+                mapGroup.add(floor);
 
-                towerConfigs.forEach(t => {
-                    const tMat = new THREE.MeshStandardMaterial({ map: studTex, color: t.color, roughness: 0.5 });
-                    // 4 Corner pillars of each tower with open archways
-                    addColliderBox(mapGroup, t.x - 6, 7, t.z - 6, 3, 14, 3, tMat);
-                    addColliderBox(mapGroup, t.x + 6, 7, t.z - 6, 3, 14, 3, tMat);
-                    addColliderBox(mapGroup, t.x - 6, 7, t.z + 6, 3, 14, 3, tMat);
-                    addColliderBox(mapGroup, t.x + 6, 7, t.z + 6, 3, 14, 3, tMat);
-                    // Tower roof
-                    addColliderBox(mapGroup, t.x, 14.5, t.z, 16, 1.5, 16, tMat, false);
-                });
+                const boxMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.3 });
+                for (let i = 0; i < 24; i++) {
+                    const bx = (Math.random() - 0.5) * 130;
+                    const bz = (Math.random() - 0.5) * 130;
+                    if (Math.hypot(bx, bz) < 16) continue;
+                    const bw = 7 + Math.random() * 9;
+                    const bd = 7 + Math.random() * 9;
+                    const bh = 6 + Math.random() * 10;
 
-                // Central Brick Monument & Neon Jump Pads
-                const centerMat = new THREE.MeshStandardMaterial({ map: studTex, color: 0xf97316 });
-                addColliderBox(mapGroup, 0, 2, 0, 6, 4, 6, centerMat);
+                    const box = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), boxMat);
+                    box.position.set(bx, bh/2, bz);
+                    box.castShadow = true;
+                    box.receiveShadow = true;
+                    mapGroup.add(box);
 
-                const padMat = new THREE.MeshStandardMaterial({ color: 0x22d3ee, emissive: 0x06b6d4, emissiveIntensity: 0.7 });
-                const padCoords = [{ x: -16, z: 0 }, { x: 16, z: 0 }, { x: 0, z: -16 }, { x: 0, z: 16 }];
-                padCoords.forEach(p => {
-                    const padMesh = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.8, 0.35, 16), padMat);
-                    padMesh.position.set(p.x, 0.2, p.z);
-                    mapGroup.add(padMesh);
-                    jumpPads.push({ x: p.x, z: p.z, radius: 2.8, boost: 22 });
-                });
-
-            } else if (mapId === 'construct') {
-                const grassTex = createProceduralTexture('construct_grass');
-                grassTex.repeat.set(30, 30);
-                const concreteTex = createProceduralTexture('concrete');
-                concreteTex.repeat.set(4, 4);
-
-                const grassMat = new THREE.MeshStandardMaterial({ map: grassTex, roughness: 0.85 });
-                const concreteMat = new THREE.MeshStandardMaterial({ map: concreteTex, roughness: 0.75 });
-                const brickMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.8 });
-                const darkRoomMat = new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.95 });
-
-                // Central Grassy Courtyard
-                const ground = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), grassMat);
-                ground.rotation.x = -Math.PI / 2;
-                mapGroup.add(ground);
-
-                // Iconic gm_construct Water Pool on the West side
-                const waterMat = new THREE.MeshStandardMaterial({
-                    color: 0x0284c7,
-                    emissive: 0x0369a1,
-                    emissiveIntensity: 0.3,
-                    roughness: 0.15
-                });
-                const pool = new THREE.Mesh(new THREE.PlaneGeometry(34, 46), waterMat);
-                pool.rotation.x = -Math.PI / 2;
-                pool.position.set(-42, 0.08, 0);
-                mapGroup.add(pool);
-
-                // Concrete pool rim
-                addColliderBox(mapGroup, -24.5, 0.5, 0, 1.2, 1, 48, concreteMat);
-
-                // Iconic Tall Brutalist Concrete Skyscraper Buildings (North)
-                addColliderBox(mapGroup, -22, 18, -48, 22, 36, 20, concreteMat);
-                addColliderBox(mapGroup, 22, 22, -48, 24, 44, 20, concreteMat);
-
-                // Famous "Dark Room" Building on the East side with open entrance
-                addColliderBox(mapGroup, 46, 6, -16, 22, 12, 2, darkRoomMat);
-                addColliderBox(mapGroup, 46, 6, 16, 22, 12, 2, darkRoomMat);
-                addColliderBox(mapGroup, 56, 6, 0, 2, 12, 32, darkRoomMat);
-                addColliderBox(mapGroup, 46, 12.5, 0, 22, 1, 34, concreteMat, false);
-
-                // Brick Spawn Archway / Garage Pillars (South)
-                addColliderBox(mapGroup, -14, 5, 42, 10, 10, 10, brickMat);
-                addColliderBox(mapGroup, 14, 5, 42, 10, 10, 10, brickMat);
-                addColliderBox(mapGroup, 0, 10.5, 42, 40, 1.5, 12, concreteMat, false);
+                    wallColliders.push({ minX: bx - bw/2, maxX: bx + bw/2, minZ: bz - bd/2, maxZ: bz + bd/2 });
+                }
             }
 
             scene.add(mapGroup);
         }
 
-        // ============================================================================
-        // 5. NEXTBOT ENTITY SPAWNING & AI PATHFINDING
-        // ============================================================================
-        function spawnNextbots() {
-            // Cleanup old nextbot meshes and audio loops
-            nextbots.forEach(bot => {
-                scene.remove(bot.mesh);
-                if (bot.audio) {
-                    try {
-                        bot.audio.osc1.stop();
-                        bot.audio.osc2.stop();
-                    } catch (e) {}
-                }
-            });
+        // --- INIT NEXTBOTS ---
+        function initNextbots() {
+            nextbots.forEach(b => scene.remove(b.sprite));
             nextbots = [];
 
             const diff = DIFFICULTIES[state.selectedDiff];
-            const spawnPoints = [
-                { x: -58, z: -58 },
-                { x: 58, z: -58 },
-                { x: -58, z: 58 },
-                { x: 58, z: 58 },
-                { x: 0, z: -64 },
-                { x: 0, z: 64 }
-            ];
+            const activeDefs = BOT_DEFINITIONS.slice(0, diff.botCount);
 
-            for (let i = 0; i < diff.botCount; i++) {
-                const arch = NEXTBOT_ARCHETYPES[i % NEXTBOT_ARCHETYPES.length];
-                const { texture, canvas: pngCanvas } = generateNextbotTexture(arch);
+            activeDefs.forEach((def, index) => {
+                const texture = textureLoader.load(def.image);
+                texture.colorSpace = THREE.SRGBColorSpace;
 
-                // Billboard Plane Mesh (always faces player horizontally like GMod Nextbots)
-                const mat = new THREE.MeshBasicMaterial({
-                    map: texture,
-                    transparent: true,
-                    alphaTest: 0.08,
-                    side: THREE.DoubleSide
-                });
-                const geo = new THREE.PlaneGeometry(4.4, 4.4);
-                const mesh = new THREE.Mesh(geo, mat);
+                const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+                const sprite = new THREE.Sprite(material);
+                sprite.scale.set(3.0, 4.0, 1);
+                scene.add(sprite);
 
-                const sp = spawnPoints[i % spawnPoints.length];
-                mesh.position.set(sp.x, 2.35, sp.z);
-                scene.add(mesh);
+                const angle = (index / activeDefs.length) * Math.PI * 2;
+                const dist = 35 + Math.random() * 20;
+                const pos = new THREE.Vector3(Math.cos(angle) * dist, 2.0, Math.sin(angle) * dist);
+                sprite.position.copy(pos);
 
-                const audioLoop = soundEngine.createBotAudioLoop(i);
+                const botAudio = new Audio(def.sound);
+                botAudio.crossOrigin = "anonymous";
+                botAudio.loop = true;
+                botAudio.volume = 0.0;
+                botAudio.play().catch(() => {});
 
                 nextbots.push({
-                    id: i,
-                    name: arch.name,
-                    color: arch.color,
-                    pngCanvas: pngCanvas,
-                    mesh: mesh,
-                    pos: new THREE.Vector3(sp.x, 2.35, sp.z),
-                    vel: new THREE.Vector3(0, 0, 0),
-                    radius: 1.05,
-                    baseSpeed: diff.botBaseSpeed * (0.94 + (i % 3) * 0.05),
-                    sprintSpeed: diff.botSprintSpeed,
-                    audio: audioLoop,
-                    spottedCooldown: 0,
-                    stuckTimer: 0,
-                    strafeDir: i % 2 === 0 ? 1 : -1,
-                    lastPos: new THREE.Vector3(sp.x, 2.35, sp.z)
+                    id: def.id,
+                    name: def.name,
+                    sprite: sprite,
+                    pos: pos,
+                    radius: 0.6,
+                    speedMult: def.speedMult,
+                    audio: botAudio
                 });
-            }
-        }
-
-        // Line-of-sight check between two 2D points against wallColliders
-        function hasLineOfSight(x1, z1, x2, z2) {
-            const steps = 14;
-            for (let s = 1; s < steps; s++) {
-                const t = s / steps;
-                const px = x1 + (x2 - x1) * t;
-                const pz = z1 + (z2 - z1) * t;
-                for (let i = 0; i < wallColliders.length; i++) {
-                    const c = wallColliders[i];
-                    if (c.maxY > 1.2 && px >= c.minX && px <= c.maxX && pz >= c.minZ && pz <= c.maxZ) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        // Resolve circle vs AABB collisions smoothly
-        function resolveCircleCollisions(pos, radius) {
-            const limit = 73.5;
-            if (pos.x < -limit) pos.x = -limit;
-            if (pos.x > limit) pos.x = limit;
-            if (pos.z < -limit) pos.z = -limit;
-            if (pos.z > limit) pos.z = limit;
-
-            for (let i = 0; i < wallColliders.length; i++) {
-                const box = wallColliders[i];
-                if (box.maxY < 0.5) continue; // Ignore floor strips
-
-                const closestX = Math.max(box.minX, Math.min(pos.x, box.maxX));
-                const closestZ = Math.max(box.minZ, Math.min(pos.z, box.maxZ));
-
-                const dx = pos.x - closestX;
-                const dz = pos.z - closestZ;
-                const distSq = dx * dx + dz * dz;
-
-                if (distSq < radius * radius) {
-                    const dist = Math.sqrt(distSq) || 0.001;
-                    const overlap = radius - dist;
-                    pos.x += (dx / dist) * overlap;
-                    pos.z += (dz / dist) * overlap;
-                }
-            }
-        }
-
-        // Push GMod-style alert notification
-        function pushAlert(text, accentColor = '#f87171') {
-            const el = document.createElement('div');
-            el.className = 'bg-slate-950/90 border-l-4 px-3 py-1.5 rounded-r-lg text-xs font-mono-tech text-white shadow-lg transition-all duration-300';
-            el.style.borderLeftColor = accentColor;
-            el.textContent = text;
-            alertFeed.appendChild(el);
-
-            while (alertFeed.children.length > 4) {
-                alertFeed.removeChild(alertFeed.firstChild);
-            }
-
-            setTimeout(() => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateX(12px)';
-                setTimeout(() => el.remove(), 300);
-            }, 3200);
-        }
-
-        // ============================================================================
-        // 6. PLAYER & NEXTBOT SIMULATION UPDATE LOOP
-        // ============================================================================
-        function updatePlayer(dt) {
-            // Movement input vector
-            let forward = 0;
-            let right = 0;
-            if (keys['KeyW'] || keys['ArrowUp']) forward += 1;
-            if (keys['KeyS'] || keys['ArrowDown']) forward -= 1;
-            if (keys['KeyD'] || keys['ArrowRight']) right += 1;
-            if (keys['KeyA'] || keys['ArrowLeft']) right -= 1;
-
-            const isMoving = forward !== 0 || right !== 0;
-            const wantsSprint = (keys['ShiftLeft'] || keys['ShiftRight']) && isMoving && !player.exhausted;
-
-            const diff = DIFFICULTIES[state.selectedDiff];
-
-            // Stamina management
-            if (wantsSprint) {
-                player.stamina -= diff.staminaDrain * dt;
-                if (player.stamina <= 0) {
-                    player.stamina = 0;
-                    player.exhausted = true;
-                }
-            } else {
-                player.stamina += diff.staminaRegen * dt;
-                if (player.stamina >= 100) player.stamina = 100;
-                if (player.exhausted && player.stamina >= 30) {
-                    player.exhausted = false;
-                }
-            }
-
-            // Update Stamina HUD
-            const stamPct = Math.round(player.stamina);
-            staminaBar.style.width = `${stamPct}%`;
-            staminaText.textContent = `${stamPct}%`;
-            if (player.exhausted) {
-                staminaBar.className = 'h-full bg-rose-500 rounded-sm transition-all duration-75';
-                staminaText.className = 'font-mono-tech text-lg font-extrabold text-rose-400';
-            } else {
-                staminaBar.className = 'h-full bg-gradient-to-r from-amber-500 to-yellow-300 rounded-sm transition-all duration-75';
-                staminaText.className = 'font-mono-tech text-lg font-extrabold text-amber-300';
-            }
-
-            // Calculate world movement direction relative to camera yaw
-            const speed = wantsSprint ? player.sprintSpeed : player.baseSpeed;
-            const sinYaw = Math.sin(player.yaw);
-            const cosYaw = Math.cos(player.yaw);
-
-            let moveX = (-sinYaw * forward + cosYaw * right);
-            let moveZ = (-cosYaw * forward - sinYaw * right);
-            const len = Math.hypot(moveX, moveZ);
-            if (len > 0.001) {
-                moveX = (moveX / len) * speed;
-                moveZ = (moveZ / len) * speed;
-            }
-
-            // Smooth acceleration / friction
-            const accel = player.onGround ? 14.0 : 5.0;
-            player.vel.x += (moveX - player.vel.x) * Math.min(1, accel * dt);
-            player.vel.z += (moveZ - player.vel.z) * Math.min(1, accel * dt);
-
-            // Jump
-            if (keys['Space'] && player.onGround) {
-                player.vel.y = player.jumpForce;
-                player.onGround = false;
-                soundEngine.playJumpSound();
-            }
-
-            // Gravity
-            player.vel.y -= 28.0 * dt;
-
-            // Integrate position
-            const prevX = player.pos.x;
-            const prevZ = player.pos.z;
-
-            player.pos.x += player.vel.x * dt;
-            player.pos.z += player.vel.z * dt;
-            player.pos.y += player.vel.y * dt;
-
-            // Floor & Jump Pads
-            if (player.pos.y <= player.height) {
-                player.pos.y = player.height;
-                player.vel.y = 0;
-                player.onGround = true;
-            }
-
-            for (let i = 0; i < jumpPads.length; i++) {
-                const pad = jumpPads[i];
-                const d = Math.hypot(player.pos.x - pad.x, player.pos.z - pad.z);
-                if (d < pad.radius && player.pos.y <= player.height + 0.5) {
-                    player.vel.y = pad.boost;
-                    player.onGround = false;
-                    soundEngine.playJumpSound();
-                }
-            }
-
-            // Wall Collisions
-            resolveCircleCollisions(player.pos, player.radius);
-
-            // Track total distance ran
-            state.distanceRan += Math.hypot(player.pos.x - prevX, player.pos.z - prevZ);
-
-            // View bobbing & dynamic FOV warp
-            const horizSpeed = Math.hypot(player.vel.x, player.vel.z);
-            if (horizSpeed > 0.5 && player.onGround) {
-                player.bobTimer += dt * (wantsSprint ? 14.5 : 9.5);
-            } else {
-                player.bobTimer = 0;
-            }
-            const bobOffset = Math.sin(player.bobTimer) * (wantsSprint ? 0.14 : 0.07);
-
-            const targetFov = wantsSprint ? 88 : (78 + soundEngine.dangerLevel * 8);
-            player.currentFov += (targetFov - player.currentFov) * Math.min(1, 8 * dt);
-            camera.fov = player.currentFov;
-            camera.updateProjectionMatrix();
-
-            // Apply camera transform + subtle danger shake
-            const shakeX = (Math.random() - 0.5) * state.screenShakeIntensity;
-            const shakeY = (Math.random() - 0.5) * state.screenShakeIntensity;
-
-            camera.position.set(
-                player.pos.x + shakeX,
-                player.pos.y + bobOffset + shakeY,
-                player.pos.z
-            );
-
-            const euler = new THREE.Euler(player.pitch, player.yaw, 0, 'YXZ');
-            camera.quaternion.setFromEuler(euler);
-        }
-
-        function updateNextbots(dt, nowSec) {
-            let minDistance = 999;
-            let closestBot = null;
-
-            for (let i = 0; i < nextbots.length; i++) {
-                const bot = nextbots[i];
-                const dx = player.pos.x - bot.pos.x;
-                const dz = player.pos.z - bot.pos.z;
-                const dist = Math.hypot(dx, dz);
-
-                if (dist < minDistance) {
-                    minDistance = dist;
-                    closestBot = bot;
-                }
-                if (dist < state.closestCall) {
-                    state.closestCall = dist;
-                }
-
-                // Line of sight check
-                const canSeePlayer = dist < 58 && hasLineOfSight(bot.pos.x, bot.pos.z, player.pos.x, player.pos.z);
-
-                if (canSeePlayer && bot.spottedCooldown <= 0 && dist < 36) {
-                    bot.spottedCooldown = 14;
-                    pushAlert(`⚠ ${bot.name} SPOTTED YOU!`, bot.color);
-                }
-                if (bot.spottedCooldown > 0) bot.spottedCooldown -= dt;
-
-                // Speed ramps up slightly over the 5 minutes and when having direct LOS
-                const timeEscalation = 1 + (state.timeSurvived / SURVIVAL_GOAL_SECONDS) * 0.16;
-                const targetSpeed = (canSeePlayer ? bot.sprintSpeed : bot.baseSpeed) * timeEscalation;
-
-                // Steering toward player + obstacle avoidance whisker steering
-                let dirX = dx / (dist || 1);
-                let dirZ = dz / (dist || 1);
-
-                // Detect if stuck against a wall and apply flanking strafe vector
-                const movedDist = Math.hypot(bot.pos.x - bot.lastPos.x, bot.pos.z - bot.lastPos.z);
-                if (movedDist < targetSpeed * dt * 0.35) {
-                    bot.stuckTimer += dt;
-                    if (bot.stuckTimer > 0.35) {
-                        bot.strafeDir *= -1;
-                        bot.stuckTimer = 0;
-                    }
-                } else {
-                    bot.stuckTimer = Math.max(0, bot.stuckTimer - dt);
-                }
-                bot.lastPos.copy(bot.pos);
-
-                // Blend perpendicular strafe when obstructed or stuck
-                if (!canSeePlayer || bot.stuckTimer > 0.1) {
-                    const perpX = -dirZ * bot.strafeDir;
-                    const perpZ = dirX * bot.strafeDir;
-                    const blend = !canSeePlayer ? 0.45 : 0.75;
-                    dirX = dirX * (1 - blend) + perpX * blend;
-                    dirZ = dirZ * (1 - blend) + perpZ * blend;
-                    const norm = Math.hypot(dirX, dirZ) || 1;
-                    dirX /= norm;
-                    dirZ /= norm;
-                }
-
-                // Soft separation between Nextbots so they flank instead of stacking on 1 pixel
-                for (let j = 0; j < nextbots.length; j++) {
-                    if (i === j) continue;
-                    const other = nextbots[j];
-                    const sdx = bot.pos.x - other.pos.x;
-                    const sdz = bot.pos.z - other.pos.z;
-                    const sdist = Math.hypot(sdx, sdz);
-                    if (sdist < 4.5 && sdist > 0.01) {
-                        dirX += (sdx / sdist) * 0.55;
-                        dirZ += (sdz / sdist) * 0.55;
-                    }
-                }
-
-                const finalNorm = Math.hypot(dirX, dirZ) || 1;
-                bot.pos.x += (dirX / finalNorm) * targetSpeed * dt;
-                bot.pos.z += (dirZ / finalNorm) * targetSpeed * dt;
-
-                resolveCircleCollisions(bot.pos, bot.radius);
-
-                // Hovering bounce + billboard rotation facing player
-                bot.mesh.position.set(
-                    bot.pos.x,
-                    2.35 + Math.sin(nowSec * 9 + i) * 0.14,
-                    bot.pos.z
-                );
-                bot.mesh.lookAt(player.pos.x, bot.mesh.position.y, player.pos.z);
-
-                // Spatial Web Audio proximity update
-                if (bot.audio && soundEngine.isInitialized) {
-                    const maxAudioDist = 48;
-                    const proximity = Math.max(0, 1 - dist / maxAudioDist);
-                    const vol = Math.pow(proximity, 2.1) * 0.34;
-                    bot.audio.gain.gain.setTargetAtTime(vol, soundEngine.ctx.currentTime, 0.05);
-
-                    // Lowpass filter muffles sound through walls and opens when close/visible
-                    const filterCutoff = canSeePlayer
-                        ? bot.audio.baseFilter * (1 + proximity * 2.2)
-                        : bot.audio.baseFilter * (0.45 + proximity * 1.1);
-                    bot.audio.filter.frequency.setTargetAtTime(filterCutoff, soundEngine.ctx.currentTime, 0.06);
-
-                    // Stereo panning relative to player's facing yaw
-                    const angleToBot = Math.atan2(-(bot.pos.x - player.pos.x), -(bot.pos.z - player.pos.z));
-                    let relAngle = angleToBot - player.yaw;
-                    while (relAngle > Math.PI) relAngle -= Math.PI * 2;
-                    while (relAngle < -Math.PI) relAngle += Math.PI * 2;
-                    const pan = Math.max(-1, Math.min(1, -Math.sin(relAngle)));
-                    bot.audio.panner.pan.setTargetAtTime(pan, soundEngine.ctx.currentTime, 0.05);
-                }
-
-                // Catch Check!
-                if (dist < 1.85) {
-                    triggerGameOver(bot);
-                    return;
-                }
-            }
-
-            // Update Danger Level, Vignette, Screen Shake & Radar Ping
-            const danger = Math.max(0, Math.min(1, 1 - (minDistance - 2.5) / 26));
-            soundEngine.dangerLevel = danger;
-            state.screenShakeIntensity = danger > 0.45 ? (danger - 0.45) * 0.24 : 0;
-
-            dangerVignette.style.background = `radial-gradient(circle at center, transparent ${Math.max(25, 55 - danger * 30)}%, rgba(220, 38, 38, ${danger * 0.68}) 100%)`;
-
-            if (minDistance < 999) {
-                nearestDistHud.textContent = `${minDistance.toFixed(1)}m`;
-                nearestDistHud.className = minDistance < 14 ? 'text-rose-400 font-bold animate-pulse' : 'text-emerald-400';
-            }
-
-            // Periodic radar sonar ping when Nextbot is inside radar range
-            const radarRange = DIFFICULTIES[state.selectedDiff].radarRange;
-            if (minDistance < radarRange) {
-                const pingInterval = Math.max(0.28, (minDistance / radarRange) * 1.6);
-                if (nowSec - state.lastRadarPingTime >= pingInterval) {
-                    state.lastRadarPingTime = nowSec;
-                    soundEngine.playRadarPing(1 - minDistance / radarRange);
-                }
-            }
-        }
-
-        // ============================================================================
-        // 7. TACTICAL MOTION TRACKER / RADAR RENDERER (MINI HUD + BIG HANDHELD)
-        // ============================================================================
-        function renderRadar(ctx, width, height, nowSec, isDetailed) {
-            const cx = width / 2;
-            const cy = height / 2;
-            const radius = Math.min(cx, cy) - 6;
-            const maxRange = DIFFICULTIES[state.selectedDiff].radarRange;
-
-            ctx.clearRect(0, 0, width, height);
-
-            // Background radar grid
-            ctx.fillStyle = 'rgba(2, 12, 10, 0.92)';
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Concentric range rings
-            ctx.strokeStyle = 'rgba(16, 185, 129, 0.22)';
-            ctx.lineWidth = 1;
-            [0.33, 0.66, 1.0].forEach(rMult => {
-                ctx.beginPath();
-                ctx.arc(cx, cy, radius * rMult, 0, Math.PI * 2);
-                ctx.stroke();
             });
-
-            // Crosshair axes
-            ctx.beginPath();
-            ctx.moveTo(cx - radius, cy);
-            ctx.lineTo(cx + radius, cy);
-            ctx.moveTo(cx, cy - radius);
-            ctx.lineTo(cx, cy + radius);
-            ctx.stroke();
-
-            // Player Vision Cone (always pointing UP on radar)
-            ctx.fillStyle = 'rgba(56, 189, 248, 0.14)';
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.arc(cx, cy, radius * 0.85, -Math.PI / 2 - 0.55, -Math.PI / 2 + 0.55);
-            ctx.closePath();
-            ctx.fill();
-
-            // Rotating sweep line
-            const sweepAngle = (nowSec * 2.8) % (Math.PI * 2);
-            ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.lineTo(cx + Math.cos(sweepAngle) * radius, cy + Math.sin(sweepAngle) * radius);
-            ctx.stroke();
-
-            // Transform world coordinates into player-relative radar space (Up = player facing)
-            const cosY = Math.cos(player.yaw);
-            const sinY = Math.sin(player.yaw);
-
-            function worldToRadar(wx, wz) {
-                const dx = wx - player.pos.x;
-                const dz = wz - player.pos.z;
-                // Rotate so player's forward (-Z when yaw=0) maps to radar UP (-Y)
-                const rx = dx * cosY - dz * sinY;
-                const rz = dx * sinY + dz * cosY;
-                return {
-                    x: cx + (rx / maxRange) * radius,
-                    y: cy + (rz / maxRange) * radius
-                };
-            }
-
-            // Draw nearby walls on radar (clipped to radar circle)
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius - 1, 0, Math.PI * 2);
-            ctx.clip();
-
-            ctx.fillStyle = 'rgba(148, 163, 184, 0.28)';
-            for (let i = 0; i < wallColliders.length; i++) {
-                const box = wallColliders[i];
-                if (box.maxY < 1) continue;
-                const bCx = (box.minX + box.maxX) / 2;
-                const bCz = (box.minZ + box.maxZ) / 2;
-                if (Math.hypot(bCx - player.pos.x, bCz - player.pos.z) > maxRange * 1.35) continue;
-
-                const p1 = worldToRadar(box.minX, box.minZ);
-                const p2 = worldToRadar(box.maxX, box.minZ);
-                const p3 = worldToRadar(box.maxX, box.maxZ);
-                const p4 = worldToRadar(box.minX, box.maxZ);
-
-                ctx.beginPath();
-                ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
-                ctx.lineTo(p3.x, p3.y);
-                ctx.lineTo(p4.x, p4.y);
-                ctx.closePath();
-                ctx.fill();
-            }
-
-            // Draw Nextbot Red Blips
-            nextbots.forEach(bot => {
-                const dx = bot.pos.x - player.pos.x;
-                const dz = bot.pos.z - player.pos.z;
-                const dist = Math.hypot(dx, dz);
-
-                const rx = dx * cosY - dz * sinY;
-                const rz = dx * sinY + dz * cosY;
-
-                // Clamp blip to edge of radar if beyond maxRange so player still sees direction
-                const clampedDist = Math.min(dist, maxRange * 0.94);
-                const angle = Math.atan2(rz, rx);
-                const bx = cx + Math.cos(angle) * (clampedDist / maxRange) * radius;
-                const by = cy + Math.sin(angle) * (clampedDist / maxRange) * radius;
-
-                const pulse = 4.5 + Math.sin(nowSec * 12) * 1.8;
-
-                // Outer red pulse halo
-                ctx.fillStyle = 'rgba(239, 68, 68, 0.35)';
-                ctx.beginPath();
-                ctx.arc(bx, by, pulse + 4, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Core red dot
-                ctx.fillStyle = '#ef4444';
-                ctx.beginPath();
-                ctx.arc(bx, by, 4, 0, Math.PI * 2);
-                ctx.fill();
-
-                if (isDetailed) {
-                    ctx.fillStyle = '#fca5a5';
-                    ctx.font = 'bold 9px JetBrains Mono';
-                    ctx.fillText(`${Math.round(dist)}m`, bx + 7, by + 3);
-                }
-            });
-
-            ctx.restore();
-
-            // Player center arrow
-            ctx.fillStyle = '#38bdf8';
-            ctx.beginPath();
-            ctx.moveTo(cx, cy - 6);
-            ctx.lineTo(cx - 4.5, cy + 5);
-            ctx.lineTo(cx + 4.5, cy + 5);
-            ctx.closePath();
-            ctx.fill();
         }
 
-        function updateBigScannerList() {
-            if (!state.bigScannerOpen) return;
-            const sorted = [...nextbots].map(b => ({
-                name: b.name,
-                color: b.color,
-                dist: Math.hypot(b.pos.x - player.pos.x, b.pos.z - player.pos.z)
-            })).sort((a, b) => a.dist - b.dist);
-
-            scannerBotList.innerHTML = sorted.map(b => `
-                <div class="flex items-center justify-between px-2 py-0.5 rounded bg-black/50 border border-white/5">
-                    <span class="font-bold truncate" style="color:${b.color}">${b.name}</span>
-                    <span class="${b.dist < 15 ? 'text-rose-400 font-bold' : 'text-emerald-300'}">${b.dist.toFixed(1)}m</span>
-                </div>
-            `).join('');
-        }
-
-        // ============================================================================
-        // 8. GAME FLOW: START, TIMER FORMATTING, JUMPSCARE GAME OVER, VICTORY
-        // ============================================================================
-        function formatTime(seconds) {
-            const clamped = Math.max(0, seconds);
-            const mins = Math.floor(clamped / 60);
-            const secs = Math.floor(clamped % 60);
-            const centis = Math.floor((clamped % 1) * 100);
-            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(centis).padStart(2, '0')}`;
-        }
-
+        // --- GAME LOOP & CONTROLS ---
         function startGame() {
-            soundEngine.init();
-            soundEngine.setMusicEnabled(state.musicEnabled);
+            if (state.menuMusicOn) {
+                menuAudio.pause();
+                menuAudio.currentTime = 0;
+            }
 
-            state.isPlaying = true;
-            state.isGameOver = false;
-            state.timeRemaining = SURVIVAL_GOAL_SECONDS;
-            state.timeSurvived = 0;
-            state.distanceRan = 0;
-            state.closestCall = 999;
-            state.flashlightOn = true;
-            flashlight.visible = true;
+            buildMap(state.selectedMap);
+            initNextbots();
 
-            const startPos = MAP_CONFIGS[state.selectedMap].playerStart;
-            player.pos.set(startPos.x, player.height, startPos.z);
-            player.vel.set(0, 0, 0);
+            player.pos.set(0, player.height, 0);
             player.yaw = 0;
             player.pitch = 0;
             player.stamina = 100;
             player.exhausted = false;
 
-            buildMap(state.selectedMap);
-            spawnNextbots();
-
-            // Update HUD labels
-            document.getElementById('hudMapLabel').textContent = MAP_CONFIGS[state.selectedMap].name.toUpperCase();
-            document.getElementById('hudDiffLabel').textContent = DIFFICULTIES[state.selectedDiff].label;
-            document.getElementById('flashlightStatusText').textContent = 'LIGHT: ON';
-            alertFeed.innerHTML = '';
+            state.timeRemaining = state.selectedTime;
+            state.timeSurvived = 0;
+            state.distanceRan = 0;
+            state.closestCall = 999;
+            state.isPlaying = true;
+            state.isGameOver = false;
 
             mainMenu.classList.add('hidden');
             endScreen.classList.add('hidden');
             hudContainer.classList.remove('hidden');
 
-            pushAlert(`SURVIVE FOR 05:00.00!`, '#38bdf8');
-            pushAlert(`${DIFFICULTIES[state.selectedDiff].botCount} NEXTBOTS RELEASED`, '#f87171');
-
-            requestPointerLockSafe();
+            canvas.requestPointerLock();
         }
 
-        function triggerGameOver(killerBot) {
-            if (state.isGameOver) return;
-            state.isGameOver = true;
+        function triggerGameOver(caughtByBotName) {
             state.isPlaying = false;
-
-            exitPointerLockSafe();
-            soundEngine.playJumpscareScream();
-
-            // Stop continuous bot loops
-            nextbots.forEach(b => {
-                if (b.audio) {
-                    try { b.audio.gain.gain.setValueAtTime(0, soundEngine.ctx.currentTime); } catch (e) {}
-                }
-            });
-
-            // Jumpscare Flash with killer Nextbot's PNG face + TV static
-            jumpscareCanvas.width = window.innerWidth;
-            jumpscareCanvas.height = window.innerHeight;
-            jumpscareCanvas.classList.remove('hidden');
-            document.body.classList.add('shake-active');
-
-            let frames = 0;
-            const scareInterval = setInterval(() => {
-                frames++;
-                jumpscareCtx.fillStyle = frames % 2 === 0 ? '#180202' : '#050505';
-                jumpscareCtx.fillRect(0, 0, jumpscareCanvas.width, jumpscareCanvas.height);
-
-                // TV static noise bars
-                for (let i = 0; i < 45; i++) {
-                    jumpscareCtx.fillStyle = `rgba(255,255,255,${Math.random() * 0.35})`;
-                    jumpscareCtx.fillRect(
-                        Math.random() * jumpscareCanvas.width,
-                        Math.random() * jumpscareCanvas.height,
-                        Math.random() * 260,
-                        4 + Math.random() * 14
-                    );
-                }
-
-                // Giant zooming Nextbot face
-                const size = Math.min(jumpscareCanvas.width, jumpscareCanvas.height) * (0.72 + frames * 0.03);
-                const jx = (jumpscareCanvas.width - size) / 2 + (Math.random() - 0.5) * 40;
-                const jy = (jumpscareCanvas.height - size) / 2 + (Math.random() - 0.5) * 40;
-                jumpscareCtx.drawImage(killerBot.pngCanvas, jx, jy, size, size);
-
-                if (frames >= 16) {
-                    clearInterval(scareInterval);
-                    jumpscareCanvas.classList.add('hidden');
-                    document.body.classList.remove('shake-active');
-                    showEndModal(false, killerBot.name);
-                }
-            }, 45);
-        }
-
-        function triggerVictory() {
-            if (state.isGameOver) return;
             state.isGameOver = true;
-            state.isPlaying = false;
+            document.exitPointerLock();
 
-            exitPointerLockSafe();
-            soundEngine.playVictoryChime();
+            if (caughtByBotName) {
+                jumpscareAudio.currentTime = 0;
+                jumpscareAudio.play().catch(() => {});
+            }
 
-            nextbots.forEach(b => {
-                if (b.audio) {
-                    try { b.audio.gain.gain.setValueAtTime(0, soundEngine.ctx.currentTime); } catch (e) {}
-                }
-            });
+            nextbots.forEach(b => b.audio.pause());
 
-            showEndModal(true, null);
-        }
+            document.getElementById('endTitle').innerText = caughtByBotName ? `CAUGHT BY ${caughtByBotName.toUpperCase()}` : "YOU SURVIVED!";
+            document.getElementById('endSubtitle').innerText = caughtByBotName ? `${caughtByBotName} terminated your run.` : `You outran the anomalies for ${state.selectedTime/60} minutes!`;
+            document.getElementById('endBadge').innerText = caughtByBotName ? "TERMINATED BY ANOMALY" : "VICTORY";
+            document.getElementById('endBadge').className = caughtByBotName 
+                ? "inline-block px-3 py-1 rounded-full text-xs font-mono-tech font-bold mb-3 bg-rose-500/20 text-rose-400 border border-rose-500/40"
+                : "inline-block px-3 py-1 rounded-full text-xs font-mono-tech font-bold mb-3 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+            
+            const mins = Math.floor(state.timeSurvived / 60).toString().padStart(2, '0');
+            const secs = (state.timeSurvived % 60).toFixed(2).padStart(5, '0');
+            document.getElementById('statTimeSurvived').innerText = `${mins}:${secs}`;
+            document.getElementById('statDistance').innerText = `${Math.round(state.distanceRan)} m`;
+            document.getElementById('statClosestCall').innerText = `${state.closestCall.toFixed(1)} m`;
+            document.getElementById('statMapDiff').innerText = `${MAP_CONFIGS[state.selectedMap].name} • ${DIFFICULTIES[state.selectedDiff].label}`;
 
-        function showEndModal(isVictory, killerName) {
-            hudContainer.classList.add('hidden');
             endScreen.classList.remove('hidden');
-
-            const badge = document.getElementById('endBadge');
-            const title = document.getElementById('endTitle');
-            const sub = document.getElementById('endSubtitle');
-
-            if (isVictory) {
-                badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-mono-tech font-bold mb-3 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
-                badge.textContent = '05:00.00 SURVIVAL COMPLETE';
-                title.textContent = 'YOU SURVIVED!';
-                sub.textContent = `You outran every Nextbot in ${MAP_CONFIGS[state.selectedMap].name}!`;
-            } else {
-                badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-mono-tech font-bold mb-3 bg-rose-500/20 text-rose-400 border border-rose-500/40';
-                badge.textContent = 'TERMINATED BY ANOMALY';
-                title.textContent = 'YOU WERE CAUGHT';
-                sub.textContent = `${killerName} caught you in ${MAP_CONFIGS[state.selectedMap].name}.`;
-            }
-
-            document.getElementById('statTimeSurvived').textContent = formatTime(state.timeSurvived);
-            document.getElementById('statDistance').textContent = `${Math.round(state.distanceRan)} m`;
-            document.getElementById('statClosestCall').textContent = state.closestCall < 900 ? `${state.closestCall.toFixed(1)} m` : 'N/A';
-            document.getElementById('statMapDiff').textContent = `${MAP_CONFIGS[state.selectedMap].name} • ${DIFFICULTIES[state.selectedDiff].label}`;
+            hudContainer.classList.add('hidden');
         }
 
-        // ============================================================================
-        // 9. POINTER LOCK, KEYBOARD, TOUCH & UI EVENT LISTENERS
-        // ============================================================================
-        function requestPointerLockSafe() {
-            if (canvas.requestPointerLock) {
-                try { canvas.requestPointerLock(); } catch (e) {}
+        window.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+            if (e.code === 'KeyF' && state.isPlaying) {
+                state.flashlightOn = !state.flashlightOn;
+                flashlight.intensity = state.flashlightOn ? 5.0 : 0;
+                document.getElementById('flashlightStatusText').innerText = state.flashlightOn ? "LIGHT: ON" : "LIGHT: OFF";
             }
-        }
-
-        function exitPointerLockSafe() {
-            if (document.pointerLockElement && document.exitPointerLock) {
-                try { document.exitPointerLock(); } catch (e) {}
-            }
-        }
-
-        document.addEventListener('pointerlockchange', () => {
-            isPointerLocked = document.pointerLockElement === canvas;
-            if (state.isPlaying && !state.isGameOver) {
-                pointerLockPrompt.classList.toggle('hidden', isPointerLocked);
-            } else {
-                pointerLockPrompt.classList.add('hidden');
+            if (e.code === 'Tab' && state.isPlaying) {
+                e.preventDefault();
+                state.bigScannerOpen = !state.bigScannerOpen;
+                const scanner = document.getElementById('handheldScanner');
+                if (state.bigScannerOpen) {
+                    scanner.classList.remove('scanner-hidden');
+                    scanner.classList.add('scanner-visible');
+                } else {
+                    scanner.classList.remove('scanner-visible');
+                    scanner.classList.add('scanner-hidden');
+                }
             }
         });
 
-        pointerLockPrompt.addEventListener('click', () => {
-            requestPointerLockSafe();
-        });
+        window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
         canvas.addEventListener('click', () => {
-            if (state.isPlaying && !state.isGameOver && !isPointerLocked) {
-                requestPointerLockSafe();
+            if (state.isPlaying && document.pointerLockElement !== canvas) {
+                canvas.requestPointerLock();
             }
         });
 
-        document.addEventListener('mousemove', (e) => {
-            if (!state.isPlaying || state.isGameOver || !isPointerLocked) return;
-            const sensitivity = 0.0022;
-            player.yaw -= e.movementX * sensitivity;
-            player.pitch -= e.movementY * sensitivity;
+        document.addEventListener('pointerlockchange', () => {
+            const prompt = document.getElementById('pointerLockPrompt');
+            if (document.pointerLockElement !== canvas && state.isPlaying) {
+                prompt.classList.remove('hidden');
+            } else {
+                prompt.classList.add('hidden');
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (document.pointerLockElement !== canvas || !state.isPlaying) return;
+            const sens = 0.0022;
+            player.yaw -= e.movementX * sens;
+            player.pitch -= e.movementY * sens;
             player.pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, player.pitch));
         });
 
-        function toggleFlashlight() {
-            state.flashlightOn = !state.flashlightOn;
-            flashlight.visible = state.flashlightOn;
-            document.getElementById('flashlightStatusText').textContent = state.flashlightOn ? 'LIGHT: ON' : 'LIGHT: OFF';
-            soundEngine.playFlashlightClick();
-        }
-
-        function toggleBigScanner() {
-            state.bigScannerOpen = !state.bigScannerOpen;
-            if (state.bigScannerOpen) {
-                handheldScanner.classList.remove('scanner-hidden');
-                handheldScanner.classList.add('scanner-visible');
-                updateBigScannerList();
-            } else {
-                handheldScanner.classList.remove('scanner-visible');
-                handheldScanner.classList.add('scanner-hidden');
-            }
-            soundEngine.playRadarPing(0.4);
-        }
-
-        function toggleMusic() {
-            soundEngine.init();
-            soundEngine.setMusicEnabled(!state.musicEnabled);
-            const label = state.musicEnabled ? 'SYNTH AUDIO: ON' : 'SYNTH AUDIO: OFF';
-            const icon = state.musicEnabled ? '🔊' : '🔇';
-            document.getElementById('menuMusicToggle').innerHTML = `<span>${icon}</span><span>${label}</span>`;
-            document.getElementById('musicIcon').textContent = icon;
-        }
-
-        document.addEventListener('keydown', (e) => {
-            keys[e.code] = true;
-
-            if (!state.isPlaying || state.isGameOver) return;
-
-            if (e.code === 'KeyF') {
-                toggleFlashlight();
-            } else if (e.code === 'Tab' || e.code === 'KeyR') {
-                e.preventDefault();
-                toggleBigScanner();
-            }
-        });
-
-        document.addEventListener('keyup', (e) => {
-            keys[e.code] = false;
-        });
-
-        // Menu Map Selection Cards
-        document.querySelectorAll('.map-card').forEach(card => {
+        // UI Selections
+        document.querySelectorAll('#mapGrid .map-card').forEach(card => {
             card.addEventListener('click', () => {
-                document.querySelectorAll('.map-card').forEach(c => c.classList.remove('selected'));
+                document.querySelectorAll('#mapGrid .map-card').forEach(c => c.classList.remove('selected'));
                 card.classList.add('selected');
-                state.selectedMap = card.dataset.map;
-                document.getElementById('selectedMapBadge').textContent = `SELECTED: ${MAP_CONFIGS[state.selectedMap].name.toUpperCase()}`;
-                // Live preview background behind menu
-                buildMap(state.selectedMap);
+                state.selectedMap = card.getAttribute('data-map');
+                document.getElementById('selectedMapBadge').innerText = `SELECTED: ${MAP_CONFIGS[state.selectedMap].name.toUpperCase()}`;
+                document.getElementById('hudMapLabel').innerText = MAP_CONFIGS[state.selectedMap].name.toUpperCase();
             });
         });
 
-        // Menu Difficulty Selection Buttons
-        document.querySelectorAll('.diff-btn').forEach(btn => {
+        document.querySelectorAll('#timeGrid .time-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+                document.querySelectorAll('#timeGrid .time-btn').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
-                state.selectedDiff = btn.dataset.diff;
-                document.getElementById('diffDescText').textContent = DIFFICULTIES[state.selectedDiff].desc;
-                buildMap(state.selectedMap);
+                state.selectedTime = parseInt(btn.getAttribute('data-time'));
+                const minsText = state.selectedTime / 60;
+                document.getElementById('selectedTimeBadge').innerText = `SELECTED: ${minsText} MINUTE${minsText > 1 ? 'S' : ''}`;
             });
         });
 
-        // Menu & HUD Action Buttons
+        document.querySelectorAll('#diffGrid .diff-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#diffGrid .diff-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                state.selectedDiff = btn.getAttribute('data-diff');
+                document.getElementById('hudDiffLabel').innerText = DIFFICULTIES[state.selectedDiff].label;
+            });
+        });
+
         document.getElementById('startGameBtn').addEventListener('click', startGame);
         document.getElementById('retryBtn').addEventListener('click', startGame);
         document.getElementById('backToMenuBtn').addEventListener('click', () => {
             endScreen.classList.add('hidden');
-            hudContainer.classList.add('hidden');
             mainMenu.classList.remove('hidden');
+            if (state.menuMusicOn) menuAudio.play().catch(() => {});
         });
-        document.getElementById('menuMusicToggle').addEventListener('click', toggleMusic);
-        document.getElementById('hudMusicBtn').addEventListener('click', toggleMusic);
-        document.getElementById('hudFlashlightBtn').addEventListener('click', toggleFlashlight);
 
-        // Mobile Touch Controls Support
-        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-            document.getElementById('mobileControls').classList.remove('hidden');
+        document.getElementById('menuMusicToggle').addEventListener('click', () => {
+            state.menuMusicOn = !state.menuMusicOn;
+            const icon = document.getElementById('menuMusicIcon');
+            const text = document.getElementById('menuMusicToggle').querySelector('span:nth-child(2)');
+            if (state.menuMusicOn) {
+                icon.innerText = "🔊";
+                text.innerText = "MENU MUSIC: ON";
+                menuAudio.play().catch(() => {});
+            } else {
+                icon.innerText = "🔇";
+                text.innerText = "MENU MUSIC: OFF";
+                menuAudio.pause();
+            }
+        });
 
-            canvas.addEventListener('touchstart', (e) => {
-                if (!state.isPlaying) return;
-                const t = e.changedTouches[0];
-                touchLookId = t.identifier;
-                lastTouchX = t.clientX;
-                lastTouchY = t.clientY;
-                // Auto-walk forward when touching left half of screen
-                if (t.clientX < window.innerWidth * 0.4) keys['KeyW'] = true;
-            }, { passive: true });
+        document.getElementById('hudMusicBtn').addEventListener('click', () => {
+            state.menuMusicOn = !state.menuMusicOn;
+            document.getElementById('musicIcon').innerText = state.menuMusicOn ? "🔊" : "🔇";
+        });
 
-            canvas.addEventListener('touchmove', (e) => {
-                if (!state.isPlaying) return;
-                for (let i = 0; i < e.changedTouches.length; i++) {
-                    const t = e.changedTouches[i];
-                    if (t.identifier === touchLookId) {
-                        const dx = t.clientX - lastTouchX;
-                        const dy = t.clientY - lastTouchY;
-                        player.yaw -= dx * 0.005;
-                        player.pitch = Math.max(-1.2, Math.min(1.2, player.pitch - dy * 0.005));
-                        lastTouchX = t.clientX;
-                        lastTouchY = t.clientY;
-                    }
+        document.getElementById('mainMenu').addEventListener('click', () => {
+            if (!state.isPlaying && state.menuMusicOn && menuAudio.paused) {
+                menuAudio.play().catch(() => {});
+            }
+        }, { once: true });
+
+        // --- MAIN GAME LOOP WITH B-HOPPING PHYSICS ---
+        let clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const dt = Math.min(clock.getDelta(), 0.1);
+
+            if (state.isPlaying) {
+                state.timeRemaining -= dt;
+                state.timeSurvived += dt;
+
+                const mins = Math.floor(Math.max(0, state.timeRemaining) / 60).toString().padStart(2, '0');
+                const secs = (Math.max(0, state.timeRemaining) % 60).toFixed(2).padStart(5, '0');
+                timerDisplay.innerText = `${mins}:${secs}`;
+
+                if (state.timeRemaining <= 0) {
+                    triggerGameOver(null);
+                    return;
                 }
-            }, { passive: true });
 
-            canvas.addEventListener('touchend', () => {
-                keys['KeyW'] = false;
-                touchLookId = null;
-            });
+                // Stamina & Sprinting
+                const diff = DIFFICULTIES[state.selectedDiff];
+                const isSprinting = (keys['ShiftLeft'] || keys['ShiftRight']) && !state.exhausted && player.stamina > 5;
+                const baseSpd = isSprinting ? player.sprintSpeed : player.baseSpeed;
 
-            document.getElementById('btnMobileJump').addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                keys['Space'] = true;
-                setTimeout(() => keys['Space'] = false, 120);
-            });
-            document.getElementById('btnMobileSprint').addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                keys['ShiftLeft'] = !keys['ShiftLeft'];
-            });
-            document.getElementById('btnMobileRadar').addEventListener('click', toggleBigScanner);
+                if (isSprinting) {
+                    player.stamina = Math.max(0, player.stamina - diff.staminaDrain * dt);
+                    if (player.stamina <= 5) state.exhausted = true;
+                } else {
+                    player.stamina = Math.min(100, player.stamina + diff.staminaRegen * dt);
+                    if (player.stamina > 30) state.exhausted = false;
+                }
+
+                staminaBar.style.width = `${player.stamina}%`;
+                staminaText.innerText = `${Math.round(player.stamina)}%`;
+
+                // --- SOURCE ENGINE B-HOPPING PHYSICS ---
+                const moveDir = new THREE.Vector3();
+                const forward = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
+                const right = new THREE.Vector3(Math.cos(player.yaw), 0, -Math.sin(player.yaw));
+
+                if (keys['KeyW'] || keys['ArrowUp']) moveDir.add(forward);
+                if (keys['KeyS'] || keys['ArrowDown']) moveDir.sub(forward);
+                if (keys['KeyD'] || keys['ArrowRight']) moveDir.add(right);
+                if (keys['KeyA'] || keys['ArrowLeft']) moveDir.sub(right);
+                moveDir.normalize();
+
+                if (player.onGround) {
+                    // Ground friction & acceleration
+                    player.vel.x = moveDir.x * baseSpd;
+                    player.vel.z = moveDir.z * baseSpd;
+
+                    // B-Hop jump trigger: if space is pressed when hitting the ground, retain and compound momentum!
+                    if (keys['Space']) {
+                        player.vel.y = player.jumpForce;
+                        player.onGround = false;
+                        // B-hop speed boost multiplier
+                        if (moveDir.lengthSq() > 0) {
+                            player.vel.x *= 1.32;
+                            player.vel.z *= 1.32;
+                        }
+                    }
+                } else {
+                    // Air control / strafe acceleration in air
+                    if (moveDir.lengthSq() > 0) {
+                        player.vel.x += moveDir.x * baseSpd * 3.5 * dt;
+                        player.vel.z += moveDir.z * baseSpd * 3.5 * dt;
+                        // Clamp max air speed
+                        const airSpd = Math.hypot(player.vel.x, player.vel.z);
+                        const maxAir = baseSpd * 1.85;
+                        if (airSpd > maxAir) {
+                            player.vel.x = (player.vel.x / airSpd) * maxAir;
+                            player.vel.z = (player.vel.z / airSpd) * maxAir;
+                        }
+                    }
+                    // Gravity
+                    player.vel.y -= 28 * dt;
+                }
+
+                player.pos.x += player.vel.x * dt;
+                player.pos.z += player.vel.z * dt;
+                player.pos.y += player.vel.y * dt;
+
+                if (moveDir.lengthSq() > 0) {
+                    state.distanceRan += Math.hypot(player.vel.x, player.vel.z) * dt * 0.25;
+                }
+
+                // Ground collision
+                if (player.pos.y <= player.height) {
+                    player.pos.y = player.height;
+                    player.vel.y = 0;
+                    player.onGround = true;
+                }
+
+                // Arena Bounds & Wall Collisions
+                player.pos.x = Math.max(-75, Math.min(75, player.pos.x));
+                player.pos.z = Math.max(-75, Math.min(75, player.pos.z));
+
+                wallColliders.forEach(w => {
+                    if (player.pos.x + player.radius > w.minX && player.pos.x - player.radius < w.maxX &&
+                        player.pos.z + player.radius > w.minZ && player.pos.z - player.radius < w.maxZ) {
+                        const pushX = Math.min(Math.abs(player.pos.x - w.minX), Math.abs(player.pos.x - w.maxX));
+                        const pushZ = Math.min(Math.abs(player.pos.z - w.minZ), Math.abs(player.pos.z - w.maxZ));
+                        if (pushX < pushZ) {
+                            player.pos.x = player.pos.x < (w.minX + w.maxX)/2 ? w.minX - player.radius : w.maxX + player.radius;
+                            player.vel.x = 0;
+                        } else {
+                            player.pos.z = player.pos.z < (w.minZ + w.maxZ)/2 ? w.minZ - player.radius : w.maxZ + player.radius;
+                            player.vel.z = 0;
+                        }
+                    }
+                });
+
+                camera.position.copy(player.pos);
+                camera.rotation.order = 'YXZ';
+                camera.rotation.y = player.yaw;
+                camera.rotation.x = player.pitch;
+
+                // Animate citizen model slightly when moving
+                if (citizenModel) {
+                    citizenModel.rotation.y = Math.sin(Date.now() * 0.01) * 0.05;
+                }
+
+                // Nextbots Pursuit
+                let nearestDist = 999;
+                nextbots.forEach(bot => {
+                    const dir = new THREE.Vector3().subVectors(player.pos, bot.pos);
+                    const dist = dir.length();
+                    if (dist < nearestDist) nearestDist = dist;
+                    if (dist < state.closestCall) state.closestCall = dist;
+
+                    const botSpeed = (dist > 15 ? diff.botBaseSpeed : diff.botSprintSpeed) * bot.speedMult;
+                    dir.y = 0;
+                    dir.normalize();
+
+                    bot.pos.x += dir.x * botSpeed * dt;
+                    wallColliders.forEach(w => {
+                        if (bot.pos.x + bot.radius > w.minX && bot.pos.x - bot.radius < w.maxX &&
+                            bot.pos.z + bot.radius > w.minZ && bot.pos.z - bot.radius < w.maxZ) {
+                            bot.pos.x = bot.pos.x < (w.minX + w.maxX)/2 ? w.minX - bot.radius : w.maxX + bot.radius;
+                        }
+                    });
+
+                    bot.pos.z += dir.z * botSpeed * dt;
+                    wallColliders.forEach(w => {
+                        if (bot.pos.x + bot.radius > w.minX && bot.pos.x - bot.radius < w.maxX &&
+                            bot.pos.z + bot.radius > w.minZ && bot.pos.z - bot.radius < w.maxZ) {
+                            bot.pos.z = bot.pos.z < (w.minZ + w.maxZ)/2 ? w.minZ - bot.radius : w.maxZ + bot.radius;
+                        }
+                    });
+
+                    bot.sprite.position.copy(bot.pos);
+                    bot.sprite.position.y = 2.0;
+                    bot.sprite.quaternion.copy(camera.quaternion);
+
+                    if (state.menuMusicOn) {
+                        const vol = Math.max(0, Math.min(1, 1 - (dist / 35)));
+                        bot.audio.volume = vol;
+                    } else {
+                        bot.audio.volume = 0;
+                    }
+
+                    if (dist < 1.6) {
+                        triggerGameOver(bot.name);
+                    }
+                });
+
+                nearestDistHud.innerText = `${Math.round(nearestDist)}m NEAR`;
+                drawRadar();
+            }
+
+            renderer.render(scene, camera);
         }
 
-        // Responsive Window Resize
+        // --- RADAR RENDERING ---
+        const radarCanvas = document.getElementById('radarCanvas');
+        const radarCtx = radarCanvas.getContext('2d');
+        const bigCanvas = document.getElementById('bigScannerCanvas');
+        const bigCtx = bigCanvas.getContext('2d');
+
+        function drawRadar() {
+            [{ ctx: radarCtx, size: 156 }, { ctx: bigCtx, size: 268 }].forEach(target => {
+                const { ctx, size } = target;
+                const radius = size / 2;
+                ctx.clearRect(0, 0, size, size);
+
+                ctx.fillStyle = 'rgba(5, 10, 8, 0.9)';
+                ctx.beginPath();
+                ctx.arc(radius, radius, radius - 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.strokeStyle = 'rgba(16, 185, 129, 0.15)';
+                ctx.beginPath();
+                ctx.arc(radius, radius, radius * 0.33, 0, Math.PI * 2);
+                ctx.arc(radius, radius, radius * 0.66, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = '#38bdf8';
+                ctx.beginPath();
+                ctx.arc(radius, radius, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                nextbots.forEach(bot => {
+                    const relX = bot.pos.x - player.pos.x;
+                    const relZ = bot.pos.z - player.pos.z;
+
+                    const cos = Math.cos(player.yaw);
+                    const sin = Math.sin(player.yaw);
+                    const rotX = relX * cos - relZ * sin;
+                    const rotZ = relX * sin + relZ * cos;
+
+                    const scale = radius / 65;
+                    const px = radius + rotX * scale;
+                    const py = radius + rotZ * scale;
+
+                    if (Math.hypot(px - radius, py - radius) < radius - 6) {
+                        ctx.fillStyle = bot.id === 'sanic' ? '#ef4444' : '#f59e0b';
+                        ctx.beginPath();
+                        ctx.arc(px, py, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+            });
+        }
+
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // ============================================================================
-        // 10. MAIN RENDER & ANIMATION LOOP (STARTED ON WINDOW.ONLOAD)
-        // ============================================================================
-        let lastFrameTime = performance.now();
-
-        function animate(now) {
-            requestAnimationFrame(animate);
-
-            const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
-            lastFrameTime = now;
-            const nowSec = now / 1000;
-
-            if (state.isPlaying && !state.isGameOver) {
-                // Countdown 5:00.00 survival timer
-                state.timeRemaining -= dt;
-                state.timeSurvived += dt;
-
-                if (state.timeRemaining <= 0) {
-                    state.timeRemaining = 0;
-                    timerDisplay.textContent = '00:00.00';
-                    triggerVictory();
-                } else {
-                    timerDisplay.textContent = formatTime(state.timeRemaining);
-                    if (state.timeRemaining <= 30) {
-                        timerDisplay.classList.add('text-rose-400');
-                    } else {
-                        timerDisplay.classList.remove('text-rose-400');
-                    }
-                }
-
-                updatePlayer(dt);
-                updateNextbots(dt, nowSec);
-
-                // Render Mini HUD Radar & Optional Big Handheld Scanner
-                renderRadar(radarCtx, radarCanvas.width, radarCanvas.height, nowSec, false);
-                if (state.bigScannerOpen) {
-                    renderRadar(bigScannerCtx, bigScannerCanvas.width, bigScannerCanvas.height, nowSec, true);
-                    if (Math.floor(nowSec * 4) !== Math.floor((nowSec - dt) * 4)) {
-                        updateBigScannerList();
-                    }
-                }
-            } else if (!state.isPlaying && !state.isGameOver) {
-                // Atmospheric slow camera orbit on the Main Menu background
-                const orbitAngle = nowSec * 0.16;
-                camera.position.set(Math.cos(orbitAngle) * 28, 12, Math.sin(orbitAngle) * 28);
-                camera.lookAt(0, 3, 0);
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        window.onload = function () {
-            buildMap(state.selectedMap);
-            lastFrameTime = performance.now();
-            requestAnimationFrame(animate);
-        };
+        animate();
     </script>
 </body>
 </html>
