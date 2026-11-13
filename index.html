@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXTBOT CHASE // B-HOP SURVIVAL</title>
+    <title>NEXTBOT CHASE // AUTHENTIC BACKROOMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -195,12 +195,12 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
                 <div>
                     <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-sky-500/15 border border-sky-400/30 text-sky-300 font-mono-tech text-xs font-bold mb-2">
-                        <span>B-HOPPING & CITIZEN MODEL ACTIVE</span>
+                        <span>AUTHENTIC BACKROOMS TEXTURES & B-HOPPING</span>
                     </div>
                     <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white">
                         NEXTBOT <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">CHASE 3D</span>
                     </h1>
-                    <p class="text-slate-400 text-sm mt-1">Master source engine bunny hopping to outrun Obunga & Sanic.</p>
+                    <p class="text-slate-400 text-sm mt-1">Outrun anomalies across textured maps with B-Hop physics.</p>
                 </div>
                 <div class="flex items-center gap-2 self-start sm:self-center">
                     <button id="menuMusicToggle" class="px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-white/10 text-xs font-mono-tech font-bold text-slate-200 flex items-center gap-2 transition">
@@ -252,7 +252,7 @@
                 </div>
             </div>
 
-            <!-- Step 2: Select Survival Time (2, 3, 4, 5 mins) -->
+            <!-- Step 2: Select Time -->
             <div class="mt-5">
                 <div class="flex items-center justify-between mb-2">
                     <h2 class="text-xs font-mono-tech uppercase tracking-widest text-slate-300 font-bold">2. SELECT SURVIVAL DURATION</h2>
@@ -261,19 +261,15 @@
                 <div class="grid grid-cols-4 gap-2.5" id="timeGrid">
                     <button class="time-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-center transition cursor-pointer" data-time="120">
                         <div class="font-bold text-sm text-white">2 MINS</div>
-                        <div class="text-[10px] text-slate-400 font-mono-tech">Quick Sprint</div>
                     </button>
                     <button class="time-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-center transition cursor-pointer" data-time="180">
                         <div class="font-bold text-sm text-white">3 MINS</div>
-                        <div class="text-[10px] text-slate-400 font-mono-tech">Standard</div>
                     </button>
                     <button class="time-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-center transition cursor-pointer" data-time="240">
                         <div class="font-bold text-sm text-white">4 MINS</div>
-                        <div class="text-[10px] text-slate-400 font-mono-tech">Intense</div>
                     </button>
                     <button class="time-btn selected py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-center transition cursor-pointer" data-time="300">
                         <div class="font-bold text-sm text-sky-300">5 MINS</div>
-                        <div class="text-[10px] text-slate-400 font-mono-tech">Hardcore</div>
                     </button>
                 </div>
             </div>
@@ -286,19 +282,15 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="diffGrid">
                     <button class="diff-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition cursor-pointer" data-diff="easy">
                         <div class="font-bold text-xs text-emerald-400">EASY</div>
-                        <div class="text-[10px] text-slate-400 font-mono-tech">Chill Pace</div>
                     </button>
                     <button class="diff-btn selected py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition cursor-pointer" data-diff="normal">
                         <div class="font-bold text-xs text-sky-300">NORMAL</div>
-                        <div class="text-[10px] text-slate-300 font-mono-tech">Standard Speed</div>
                     </button>
                     <button class="diff-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition cursor-pointer" data-diff="hard">
                         <div class="font-bold text-xs text-amber-400">HARD</div>
-                        <div class="text-[10px] text-slate-400 font-mono-tech">Aggressive</div>
                     </button>
                     <button class="diff-btn py-2 px-3 rounded-xl bg-slate-900/90 border border-white/10 text-left transition cursor-pointer" data-diff="nightmare">
                         <div class="font-bold text-xs text-rose-400">NIGHTMARE</div>
-                        <div class="text-[10px] text-slate-400 font-mono-tech">Pitch Dark</div>
                     </button>
                 </div>
             </div>
@@ -354,10 +346,10 @@
     <script>
         /**
          * ============================================================================
-         * NEXTBOT CHASE 3D // B-HOPPING + CITIZEN MODEL + SELECTABLE DURATION
+         * PROCEDURAL BACKROOMS TEXTURE GENERATOR & GAME ENGINE
          * ============================================================================
          */
-        let SURVIVAL_GOAL_SECONDS = 300; // Default 5 mins
+        let SURVIVAL_GOAL_SECONDS = 300;
         const ASSET_BASE = "https://raw.githubusercontent.com/VirtuosoOfCode/nextbot-assests/main/Assets/";
 
         const DIFFICULTIES = {
@@ -399,7 +391,6 @@
             bigScannerOpen: false
         };
 
-        // Player physics + B-Hop momentum
         const player = {
             pos: new THREE.Vector3(0, 2.2, 0),
             vel: new THREE.Vector3(0, 0, 0),
@@ -419,7 +410,63 @@
         let wallColliders = [];
         let nextbots = [];
         let mapGroup = null;
-        let citizenModel = null; // GMod Player Model
+        let citizenModel = null;
+
+        // Procedural Textures for Backrooms
+        let backroomWallTexture = null;
+        let backroomFloorTexture = null;
+        let backroomCeilTexture = null;
+
+        function generateBackroomTextures() {
+            // 1. Wall Texture (Yellow Wallpaper Stripes)
+            const canvasW = document.createElement('canvas');
+            canvasW.width = 256; canvasW.height = 256;
+            const ctxW = canvasW.getContext('2d');
+            ctxW.fillStyle = '#bfa543';
+            ctxW.fillRect(0, 0, 256, 256);
+            ctxW.fillStyle = '#9e8428';
+            for (let i = 0; i < 256; i += 32) {
+                ctxW.fillRect(i, 0, 12, 256);
+            }
+            // Add subtle noise/stains
+            ctxW.fillStyle = 'rgba(0,0,0,0.08)';
+            for(let i=0; i<400; i++) {
+                ctxW.fillRect(Math.random()*256, Math.random()*256, 3, 3);
+            }
+            backroomWallTexture = new THREE.CanvasTexture(canvasW);
+            backroomWallTexture.wrapS = THREE.RepeatWrapping;
+            backroomWallTexture.wrapT = THREE.RepeatWrapping;
+
+            // 2. Floor Texture (Damp Carpet)
+            const canvasF = document.createElement('canvas');
+            canvasF.width = 256; canvasF.height = 256;
+            const ctxF = canvasF.getContext('2d');
+            ctxF.fillStyle = '#b59a35';
+            ctxF.fillRect(0, 0, 256, 256);
+            ctxF.fillStyle = 'rgba(70, 55, 15, 0.25)';
+            for(let i=0; i<1500; i++) {
+                ctxF.fillRect(Math.random()*256, Math.random()*256, 2, 2);
+            }
+            backroomFloorTexture = new THREE.CanvasTexture(canvasF);
+            backroomFloorTexture.wrapS = THREE.RepeatWrapping;
+            backroomFloorTexture.wrapT = THREE.RepeatWrapping;
+
+            // 3. Ceiling Texture (Acoustic Tiles)
+            const canvasC = document.createElement('canvas');
+            canvasC.width = 256; canvasC.height = 256;
+            const ctxC = canvasC.getContext('2d');
+            ctxC.fillStyle = '#cfc69b';
+            ctxC.fillRect(0, 0, 256, 256);
+            ctxC.strokeStyle = '#5c5432';
+            ctxC.lineWidth = 3;
+            ctxC.strokeRect(0, 0, 256, 256);
+            ctxC.strokeRect(64, 0, 128, 256);
+            ctxC.strokeRect(0, 64, 256, 128);
+            backroomCeilTexture = new THREE.CanvasTexture(canvasC);
+            backroomCeilTexture.wrapS = THREE.RepeatWrapping;
+            backroomCeilTexture.wrapT = THREE.RepeatWrapping;
+        }
+        generateBackroomTextures();
 
         let menuAudio = new Audio(ASSETS.menuMusic);
         menuAudio.crossOrigin = "anonymous";
@@ -458,46 +505,33 @@
         camera.add(flashlight.target);
         scene.add(camera);
 
-        // --- CREATE GMOD CITIZEN PLAYER MODEL ---
+        // --- CITIZEN MODEL ---
         function createCitizenPlayerModel() {
             const group = new THREE.Group();
-
-            // Torso (Dark jacket matching reference image)
-            const torsoGeo = new THREE.BoxGeometry(0.7, 0.9, 0.4);
             const torsoMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 });
-            const torso = new THREE.Mesh(torsoGeo, torsoMat);
+            const torso = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.9, 0.4), torsoMat);
             torso.position.y = 0.55;
-            torso.castShadow = true;
             group.add(torso);
 
-            // Head (Matching skin tone and short hair from reference)
-            const headGeo = new THREE.BoxGeometry(0.35, 0.4, 0.35);
             const headMat = new THREE.MeshStandardMaterial({ color: 0xd4b293, roughness: 0.8 });
-            const head = new THREE.Mesh(headGeo, headMat);
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.4, 0.35), headMat);
             head.position.y = 1.2;
-            head.castShadow = true;
             group.add(head);
 
-            // Hair top
-            const hairGeo = new THREE.BoxGeometry(0.36, 0.12, 0.36);
             const hairMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.9 });
-            const hair = new THREE.Mesh(hairGeo, hairMat);
+            const hair = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.12, 0.36), hairMat);
             hair.position.y = 1.42;
             group.add(hair);
 
-            // Legs
-            const legGeo = new THREE.BoxGeometry(0.3, 0.8, 0.3);
             const legMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7 });
-            
-            const leftLeg = new THREE.Mesh(legGeo, legMat);
+            const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.8, 0.3), legMat);
             leftLeg.position.set(-0.2, -0.35, 0);
             group.add(leftLeg);
 
-            const rightLeg = new THREE.Mesh(legGeo, legMat);
+            const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.8, 0.3), legMat);
             rightLeg.position.set(0.2, -0.35, 0);
             group.add(rightLeg);
 
-            // Position model slightly forward & downward relative to camera so player sees their body looking down/walking, but camera never clips inside the head
             group.position.set(0, -0.4, -0.6);
             camera.add(group);
             citizenModel = group;
@@ -517,21 +551,24 @@
             ambientLight.intensity = state.selectedDiff === 'nightmare' ? 0.12 : cfg.ambientIntensity;
 
             if (mapKey === 'backrooms') {
+                backroomFloorTexture.repeat.set(40, 40);
                 const floorGeo = new THREE.PlaneGeometry(160, 160);
-                const floorMat = new THREE.MeshStandardMaterial({ color: 0xc2a83e, roughness: 0.6 });
+                const floorMat = new THREE.MeshStandardMaterial({ map: backroomFloorTexture, roughness: 0.8 });
                 const floor = new THREE.Mesh(floorGeo, floorMat);
                 floor.rotation.x = -Math.PI / 2;
                 floor.receiveShadow = true;
                 mapGroup.add(floor);
 
+                backroomCeilTexture.repeat.set(40, 40);
                 const ceilGeo = new THREE.PlaneGeometry(160, 160);
-                const ceilMat = new THREE.MeshStandardMaterial({ color: 0x3d351b, roughness: 0.8 });
+                const ceilMat = new THREE.MeshStandardMaterial({ map: backroomCeilTexture, roughness: 0.9 });
                 const ceil = new THREE.Mesh(ceilGeo, ceilMat);
                 ceil.rotation.x = Math.PI / 2;
                 ceil.position.y = 5.5;
                 mapGroup.add(ceil);
 
-                const wallMat = new THREE.MeshStandardMaterial({ color: 0xd4bc53, roughness: 0.5 });
+                backroomWallTexture.repeat.set(3, 1.5);
+                const wallMat = new THREE.MeshStandardMaterial({ map: backroomWallTexture, roughness: 0.6 });
                 for (let x = -60; x <= 60; x += 12) {
                     for (let z = -60; z <= 60; z += 12) {
                         if (Math.random() > 0.35 && !(Math.abs(x) < 12 && Math.abs(z) < 12)) {
@@ -650,7 +687,6 @@
             });
         }
 
-        // --- GAME LOOP & CONTROLS ---
         function startGame() {
             if (state.menuMusicOn) {
                 menuAudio.pause();
@@ -756,7 +792,6 @@
             player.pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, player.pitch));
         });
 
-        // UI Selections
         document.querySelectorAll('#mapGrid .map-card').forEach(card => {
             card.addEventListener('click', () => {
                 document.querySelectorAll('#mapGrid .map-card').forEach(c => c.classList.remove('selected'));
@@ -820,7 +855,7 @@
             }
         }, { once: true });
 
-        // --- MAIN GAME LOOP WITH B-HOPPING PHYSICS ---
+        // --- MAIN GAME LOOP WITH B-HOPPING & COLLISIONS ---
         let clock = new THREE.Clock();
 
         function animate() {
@@ -840,7 +875,6 @@
                     return;
                 }
 
-                // Stamina & Sprinting
                 const diff = DIFFICULTIES[state.selectedDiff];
                 const isSprinting = (keys['ShiftLeft'] || keys['ShiftRight']) && !state.exhausted && player.stamina > 5;
                 const baseSpd = isSprinting ? player.sprintSpeed : player.baseSpeed;
@@ -856,7 +890,6 @@
                 staminaBar.style.width = `${player.stamina}%`;
                 staminaText.innerText = `${Math.round(player.stamina)}%`;
 
-                // --- SOURCE ENGINE B-HOPPING PHYSICS ---
                 const moveDir = new THREE.Vector3();
                 const forward = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
                 const right = new THREE.Vector3(Math.cos(player.yaw), 0, -Math.sin(player.yaw));
@@ -868,26 +901,21 @@
                 moveDir.normalize();
 
                 if (player.onGround) {
-                    // Ground friction & acceleration
                     player.vel.x = moveDir.x * baseSpd;
                     player.vel.z = moveDir.z * baseSpd;
 
-                    // B-Hop jump trigger: if space is pressed when hitting the ground, retain and compound momentum!
                     if (keys['Space']) {
                         player.vel.y = player.jumpForce;
                         player.onGround = false;
-                        // B-hop speed boost multiplier
                         if (moveDir.lengthSq() > 0) {
                             player.vel.x *= 1.32;
                             player.vel.z *= 1.32;
                         }
                     }
                 } else {
-                    // Air control / strafe acceleration in air
                     if (moveDir.lengthSq() > 0) {
                         player.vel.x += moveDir.x * baseSpd * 3.5 * dt;
                         player.vel.z += moveDir.z * baseSpd * 3.5 * dt;
-                        // Clamp max air speed
                         const airSpd = Math.hypot(player.vel.x, player.vel.z);
                         const maxAir = baseSpd * 1.85;
                         if (airSpd > maxAir) {
@@ -895,7 +923,6 @@
                             player.vel.z = (player.vel.z / airSpd) * maxAir;
                         }
                     }
-                    // Gravity
                     player.vel.y -= 28 * dt;
                 }
 
@@ -907,14 +934,12 @@
                     state.distanceRan += Math.hypot(player.vel.x, player.vel.z) * dt * 0.25;
                 }
 
-                // Ground collision
                 if (player.pos.y <= player.height) {
                     player.pos.y = player.height;
                     player.vel.y = 0;
                     player.onGround = true;
                 }
 
-                // Arena Bounds & Wall Collisions
                 player.pos.x = Math.max(-75, Math.min(75, player.pos.x));
                 player.pos.z = Math.max(-75, Math.min(75, player.pos.z));
 
@@ -938,12 +963,10 @@
                 camera.rotation.y = player.yaw;
                 camera.rotation.x = player.pitch;
 
-                // Animate citizen model slightly when moving
                 if (citizenModel) {
                     citizenModel.rotation.y = Math.sin(Date.now() * 0.01) * 0.05;
                 }
 
-                // Nextbots Pursuit
                 let nearestDist = 999;
                 nextbots.forEach(bot => {
                     const dir = new THREE.Vector3().subVectors(player.pos, bot.pos);
